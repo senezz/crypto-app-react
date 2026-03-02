@@ -1,6 +1,8 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { fakeFetchCrypto, fetchAssets } from '../api';
 import { percentDifference } from '../utils'
+import { app, createUser, getAllUsers } from "../firebase";
+
 
 
 const CryptoContext = createContext({
@@ -31,7 +33,11 @@ export function CryptoContextProvider({children}) {
     useEffect(() => {
         async function preLoad() {
             setLoading(true)
+            await createUser()
+            const allUsers = await getAllUsers()
+            console.log({allUsers})
             const { result } = await fakeFetchCrypto()
+            console.log({ result })
             const assets = await fetchAssets()
 
             setAssets(mapAssets(assets, result))
