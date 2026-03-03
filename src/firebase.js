@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
+import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -39,4 +39,25 @@ export async function getAllUsers() {
         users[doc.id] = doc.data()
 });
     return users
+}
+
+export async function getFirstUser() {
+    const snapshot = await getDocs(collection(db, "users"));
+    const users = snapshot.docs
+    const firstUser = users[0].ref
+    console.log({firstUser, users})
+    return firstUser
+}
+
+export async function updateFirstUser() {
+    // const firstUser = doc(collection(db, "users", users[0].id));
+    const firstUser = await getFirstUser()
+    await updateDoc(firstUser, {
+    born: 2006
+});
+}
+
+export async function deleteFirstUser() {
+    const firstUser = await getFirstUser()
+    await deleteDoc(firstUser)
 }
