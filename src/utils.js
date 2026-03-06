@@ -5,3 +5,11 @@ export function percentDifference(a, b) {
 export function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.substr(1)
 }
+
+export function sellCoin() {
+  console.log('sell')
+}
+
+export function sellAllCoins() {
+  console.log('sellAll')
+}

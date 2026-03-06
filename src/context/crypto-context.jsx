@@ -1,32 +1,32 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import { fakeFetchCrypto, fetchAssets } from '../api';
+import { fakeFetchCrypto, fetchPortfolio } from '../api';
 import { percentDifference } from '../utils'
 import { app, createUser, getAllUsers, updateFirstUser, deleteFirstUser, } from "../firebase";
 
 
 
 const CryptoContext = createContext({
-  assets: [],
-  crypto: [],
+  portfolio: [],
+  crypto: [], 
   loading: false,
 })
 
 export function CryptoContextProvider({children}) {
     const [loading, setLoading] = useState(false)
     const [crypto, setCrypto] = useState([])
-    const [assets, setAssets] = useState([])
+    const [portfolio, setPortfolio] = useState([])
 
-    function mapAssets(assets, result) {
-    return assets.map((asset) => {
-      const coin = result.find((c) => c.id === asset.id)
-      return {
-        grow: asset.price < coin.price,
-        growPercent: percentDifference(asset.price, coin.price),
-        totalAmount: asset.amount * coin.price,
-        totalProfit: asset.amount * coin.price - asset.amount * asset.price,
-        name: coin.name,
-        ...asset,
-      }
+    function mapPortfolio(portfolio, result) {
+      return portfolio.map((asset) => {
+        const coin = result.find((c) => c.id === asset.id)
+        return {
+          grow: asset.price < coin.price,
+          growPercent: percentDifference(asset.price, coin.price),
+          totalAmount: asset.amount * coin.price,
+          totalProfit: asset.amount * coin.price - asset.amount * asset.price,
+          name: coin.name,
+          ...asset,
+        }
     })
 }
 
@@ -38,13 +38,14 @@ export function CryptoContextProvider({children}) {
             // console.log({allUsers})
             const { result } = await fakeFetchCrypto()
             // console.log({ result })
-            const assets = await fetchAssets()
+            const portfolio = await fetchPortfolio()
 
             // await updateFirstUser()
-            await deleteFirstUser()
-            await deleteFirstUser()
-            setAssets(mapAssets(assets, result))
+            // await deleteFirstUser()
+            // await deleteFirstUser()
+            setPortfolio(mapPortfolio(portfolio, result))
             setCrypto(result)
+            setTimeout(() => console.log(portfolio), 2000)
             setLoading(false)
         }
         preLoad()
@@ -52,10 +53,22 @@ export function CryptoContextProvider({children}) {
 
 
     function addAsset(newAsset) {
-        setAssets((prev) => mapAssets([...prev, newAsset], crypto))
+      console.log({portfolio})
+        setPortfolio((prev) => mapPortfolio([...prev, newAsset], crypto))
+        console.log({portfolio})
     }
 
-    return <CryptoContext.Provider value={{loading, crypto, assets, addAsset}}>
+    function sellAsset(assetId, sellAmount) {
+      setPortfolio((prev) =>
+        mapPortfolio( 
+          prev.map((a) => a.id === assetId ? ({...a, amount: a.amount - sellAmount}) : a)
+          .filter((a) => a.amount > 0),
+          crypto
+        )  
+    )
+  }
+
+    return <CryptoContext.Provider value={{loading, crypto, portfolio, addAsset}}>
         {children}
     </CryptoContext.Provider>
 }

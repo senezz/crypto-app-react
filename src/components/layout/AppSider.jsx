@@ -1,6 +1,6 @@
-import { Layout, Card, Statistic, List, Typography, Tag } from 'antd';
+import { Layout, Card, Statistic, List, Typography, Tag, Button, Flex, Space } from 'antd';
 import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
-import { capitalize } from '../../utils'
+import { capitalize, sellCoin, sellAllCoins } from '../../utils'
 import { useContext } from 'react';
 import CryptoContext from '../../context/crypto-context';
 
@@ -9,14 +9,26 @@ const siderStyle = {
 };
 
 export default function AppSider() {
-  const { assets } = useContext(CryptoContext)
+  const { portfolio } = useContext(CryptoContext)
 
   return (
     <Layout.Sider width="25%" style={siderStyle}>
-      {assets.map((asset) => (
-        <Card key={asset.id} style={{ marginBottom: '1rem' }}>
+      {portfolio.map((asset) => (
+        <Card key={asset.id} style={{ marginBottom: '1rem' }}> 
           <Statistic
-            title={capitalize(asset.id)}
+            title={
+            <div style={{ display: "flex", justifyContent: "space-between",  alignItems: 'center'}}>
+              <span>{capitalize(asset.id)}</span>
+              <Space>
+                <Button onClick={sellCoin}>
+                  Sell
+                </Button>
+                <Button onClick={sellAllCoins}> 
+                  Sell All
+                </Button>
+              </Space>
+            </div>
+            }
             value={asset.totalAmount}
             precision={2}
             styles={{ content: { color: asset.grow ? '#3f8600' : '#cf1322' } }}

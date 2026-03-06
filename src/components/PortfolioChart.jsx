@@ -5,14 +5,14 @@ import { useCrypto } from '../context/crypto-context'
 ChartJS.register(ArcElement, Tooltip, Legend)
 
 export default function PortfolioChart() {
-  const { assets } = useCrypto()
+  const { portfolio } = useCrypto()
 
   const data = {
-    labels: assets.map((a) => a.name),
+    labels: portfolio.map((a) => a.name),
     datasets: [
       {
         label: '$',
-        data: assets.map((a) => a.totalAmount),
+        data: portfolio.map((a) => a.totalAmount),
         backgroundColor: [
           'rgba(255, 99, 132, 1)',
           'rgba(54, 162, 235, 1)',

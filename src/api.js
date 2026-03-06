@@ -1,4 +1,4 @@
-import { cryptoAssets, } from "./data";
+import { cryptoPortfolio, } from "./data";
 
 export async function fakeFetchCrypto() {
   const options = {
@@ -11,10 +11,10 @@ export async function fakeFetchCrypto() {
   .catch(err => console.error(err));
 }
 
-export function fetchAssets() {
+export function fetchPortfolio() {
     return new Promise(resolve => {
         setTimeout(() => {
-            resolve(cryptoAssets)
+            resolve(cryptoPortfolio)
         }, 2)
     })
 }

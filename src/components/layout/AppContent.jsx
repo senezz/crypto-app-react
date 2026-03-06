@@ -12,7 +12,7 @@ const contentStyle = {
 };
 
 export default function AppContent() {
- const { assets, crypto } = useCrypto()
+ const { portfolio, crypto } = useCrypto()
 
  const cryptoPriceMap = crypto.reduce((acc, c) => {
     acc[c.id] = c.price
@@ -23,7 +23,7 @@ export default function AppContent() {
     <Layout.Content style={contentStyle}>
       <Typography.Title level={3} style={{ textAlign: 'left', color: '#fff' }}>
         Portfolio:{' '}
-        {assets
+        {portfolio
           .map((asset) => asset.amount * cryptoPriceMap[asset.id])
           .reduce((acc, v) => (acc += v), 0)
           .toFixed(2)}

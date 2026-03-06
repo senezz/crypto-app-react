@@ -2,7 +2,7 @@ export function getCryptoData() {
   
 } 
 
-export const cryptoAssets = [
+export const cryptoPortfolio = [
   {
     id: 'bitcoin',
     amount: 0.02,
