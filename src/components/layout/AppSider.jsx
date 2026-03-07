@@ -1,15 +1,20 @@
-import { Layout, Card, Statistic, List, Typography, Tag, Button, Flex, Space } from 'antd';
+import { Layout, Card, Statistic, List, Typography, Tag, Button, Space} from 'antd';
 import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
-import { capitalize, sellCoin, sellAllCoins } from '../../utils'
-import { useContext } from 'react';
+import { capitalize } from '../../utils'
+import { useContext, useState } from 'react';
 import CryptoContext from '../../context/crypto-context';
+import SellAssetForm from '../SellAssetForm';
+import SellAllAssetsModal from '../SellAllAssetsModal';
 
 const siderStyle = {
   padding: '1rem',
 };
 
 export default function AppSider() {
-  const { portfolio } = useContext(CryptoContext)
+  const { portfolio, sellAsset } = useContext(CryptoContext) 
+  const [forSellAsset, setForSellAsset] = useState(null)
+  const [forSellAllAsset, setForSellAllAsset] = useState(null)
+
 
   return (
     <Layout.Sider width="25%" style={siderStyle}>
@@ -20,10 +25,12 @@ export default function AppSider() {
             <div style={{ display: "flex", justifyContent: "space-between",  alignItems: 'center'}}>
               <span>{capitalize(asset.id)}</span>
               <Space>
-                <Button onClick={sellCoin}>
+                <Button onClick={() => {
+                  setForSellAsset(asset)}}
+                >
                   Sell
                 </Button>
-                <Button onClick={sellAllCoins}> 
+                <Button onClick={() => setForSellAllAsset(asset)}>
                   Sell All
                 </Button>
               </Space>
@@ -67,6 +74,20 @@ export default function AppSider() {
           />
         </Card>
       ))}
+      {forSellAsset && (
+        <SellAssetForm
+          asset={forSellAsset}
+          open={!!forSellAsset}
+          onClose={() => setForSellAsset(null)}
+        />
+      )}
+      {forSellAllAsset && (
+        <SellAllAssetsModal
+          asset={forSellAllAsset}
+          open={!!forSellAllAsset}
+          onClose={() => setForSellAllAsset(null)}
+        />
+      )}
     </Layout.Sider>
   )
 }

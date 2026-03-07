@@ -29,7 +29,7 @@ export default function AssetsTable() {
   const data = portfolio.map((a) => ({
     key: a.id,
     name: a.name,
-    price: a.price,
+    price: a.price.toFixed(2),
     amount: a.amount,
   }))
 

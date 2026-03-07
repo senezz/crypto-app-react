@@ -43,6 +43,7 @@ export function CryptoContextProvider({children}) {
             // await updateFirstUser()
             // await deleteFirstUser()
             // await deleteFirstUser()
+            console.log({portfolio})
             setPortfolio(mapPortfolio(portfolio, result))
             setCrypto(result)
             setTimeout(() => console.log(portfolio), 2000)
@@ -53,9 +54,23 @@ export function CryptoContextProvider({children}) {
 
 
     function addAsset(newAsset) {
-      console.log({portfolio})
-        setPortfolio((prev) => mapPortfolio([...prev, newAsset], crypto))
-        console.log({portfolio})
+        setPortfolio((prev) => { 
+          console.log({prev, newAsset}) 
+          const existedAssetIndex = prev.findIndex((a) => a.id === newAsset.id) 
+          if (existedAssetIndex === -1) {
+            prev.push(newAsset)
+
+          } else {
+            const totalPricePrev = prev[existedAssetIndex].amount * prev[existedAssetIndex].price
+            const totalPriceNew = newAsset.amount * newAsset.price
+            const sumOfTotals = totalPricePrev + totalPriceNew
+            const newPrice = sumOfTotals / (prev[existedAssetIndex].amount + newAsset.amount)
+            prev[existedAssetIndex].price = newPrice
+            prev[existedAssetIndex].amount += newAsset.amount
+          }
+         return mapPortfolio(prev, crypto)
+        }
+      )
     }
 
     function sellAsset(assetId, sellAmount) {
@@ -68,7 +83,7 @@ export function CryptoContextProvider({children}) {
     )
   }
 
-    return <CryptoContext.Provider value={{loading, crypto, portfolio, addAsset}}>
+    return <CryptoContext.Provider value={{loading, crypto, portfolio, addAsset, sellAsset}}>
         {children}
     </CryptoContext.Provider>
 }

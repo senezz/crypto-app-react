@@ -1,8 +1,6 @@
 import {
   Select,
   Space,
-  Typography,
-  Flex,
   Divider,
   Form,
   InputNumber,
@@ -75,15 +73,15 @@ export default function AddAssetForm({ onClose }) {
     }
 
     function onFinish(values) {
-    const newAsset = {
-      id: coin.id,
-      amount: values.amount,
-      price: values.price,
-      date: values.date?.$d ?? new Date(),
-    }
-    assetRef.current = newAsset
-    setSubmitted(true)
-    addAsset(newAsset)
+      const newAsset = {
+        id: coin.id,
+        amount: values.amount,
+        price: values.price,
+        date: values.date?.$d ?? new Date(),
+      }
+      assetRef.current = newAsset
+      setSubmitted(true)
+      addAsset(newAsset)
   }
 
     function handleAmountChange(value) {
