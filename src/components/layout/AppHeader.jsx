@@ -1,39 +1,39 @@
-import { Layout, Select, Space, Button, Modal, Drawer } from 'antd';
-import { useCrypto } from '../../context/crypto-context';
-import { useEffect, useState } from 'react'
-import CoinInfoModal from '../CoinInfoModal'
-import AddAssetForm from '../AddAssetForm'
+import { Layout, Select, Space, Button, Modal, Drawer } from "antd";
+import { useCrypto } from "../../context/crypto-context";
+import { useEffect, useState } from "react";
+import CoinInfoModal from "../CoinInfoModal";
+import AddAssetForm from "../AddAssetForm";
 
 const headerStyle = {
-  width: '100%',
-  textAlign: 'center',
+  width: "100%",
+  textAlign: "center",
   height: 60,
-  padding: '1rem',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
+  padding: "1rem",
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
 };
 
 export default function AppHeader() {
-  const [select, setSelect] = useState(false)
-  const [coin, setCoin] = useState(null)
-  const [modal, setModal] = useState(false)
-  const [drawer, setDrawer] = useState(false)
-  const { crypto } = useCrypto()
+  const [select, setSelect] = useState(false);
+  const [coin, setCoin] = useState(null);
+  const [modal, setModal] = useState(false);
+  const [drawer, setDrawer] = useState(false);
+  const { crypto } = useCrypto();
 
   useEffect(() => {
     const keypress = (event) => {
-      if (event.key === '/') {
-        setSelect((prev) => !prev)
+      if (event.key === "/") {
+        setSelect((prev) => !prev);
       }
-    }
-    document.addEventListener('keypress', keypress)
-    return () => document.removeEventListener('keypress', keypress)
-  }, [])
+    };
+    document.addEventListener("keypress", keypress);
+    return () => document.removeEventListener("keypress", keypress);
+  }, []);
 
   function handleSelect(value) {
-    setCoin(crypto.find((c) => c.id === value))
-    setModal(true)
+    setCoin(crypto.find((c) => c.id === value));
+    setModal(true);
   }
 
   return (
@@ -57,7 +57,7 @@ export default function AppHeader() {
               style={{ width: 20 }}
               src={option.data.icon}
               atl={option.data.label}
-            />{' '}
+            />{" "}
             {option.data.label}
           </Space>
         )}
@@ -72,7 +72,7 @@ export default function AppHeader() {
       </Modal>
 
       <Drawer
-        size={'600px'}
+        size={"600px"}
         title="Add Asset"
         onClose={() => setDrawer(false)}
         open={drawer}
@@ -81,5 +81,5 @@ export default function AppHeader() {
         <AddAssetForm onClose={() => setDrawer(false)} />
       </Drawer>
     </Layout.Header>
-  )
+  );
 }

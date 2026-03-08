@@ -1,4 +1,4 @@
-import { Flex, Typography } from 'antd'
+import { Flex, Typography } from "antd";
 
 export default function CoinInfo({ coin, withSymbol }) {
   return (
@@ -12,5 +12,5 @@ export default function CoinInfo({ coin, withSymbol }) {
         {withSymbol && <span>({coin.symbol})</span>} {coin.name}
       </Typography.Title>
     </Flex>
-  )
+  );
 }
