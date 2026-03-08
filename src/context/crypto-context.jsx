@@ -1,13 +1,7 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { fakeFetchCrypto, fetchPortfolio } from "../api";
 import { percentDifference } from "../utils";
-import {
-  app,
-  createUser,
-  getAllUsers,
-  updateFirstUser,
-  deleteFirstUser,
-} from "../firebase";
+import { updatePortfolio, getPortfolio } from "../firebase";
 
 const CryptoContext = createContext({
   portfolio: [],
@@ -21,6 +15,7 @@ export function CryptoContextProvider({ children }) {
   const [portfolio, setPortfolio] = useState([]);
 
   function mapPortfolio(portfolio, result) {
+    updatePortfolio("test", portfolio);
     return portfolio.map((asset) => {
       const coin = result.find((c) => c.id === asset.id);
       return {
@@ -37,14 +32,14 @@ export function CryptoContextProvider({ children }) {
   useEffect(() => {
     async function preLoad() {
       setLoading(true);
-      // await createUser()
+      // await createPortfolio("test");
       // const allUsers = await getAllUsers()
       // console.log({allUsers})
       const { result } = await fakeFetchCrypto();
       // console.log({ result })
-      const portfolio = await fetchPortfolio();
+      const portfolio = await getPortfolio("test");
 
-      // await updateFirstUser()
+      // await updatePortfolio("test");
       // await deleteFirstUser()
       // await deleteFirstUser()
       console.log({ portfolio });

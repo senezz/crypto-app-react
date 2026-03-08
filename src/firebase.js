@@ -3,11 +3,12 @@ import { initializeApp } from "firebase/app";
 import {
   getFirestore,
   collection,
-  addDoc,
+  setDoc,
   getDocs,
   updateDoc,
   deleteDoc,
   doc,
+  getDoc,
 } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -26,46 +27,43 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 
-export async function createUser() {
+export async function createPortfolio(portfolioId) {
   try {
-    const docRef = await addDoc(collection(db, "users"), {
-      first: "Ada",
-      last: "Lovelace",
-      born: 1815,
+    await setDoc(doc(db, "portfolios", portfolioId), {
+      assets: [],
     });
-    console.log("Document written with ID: ", docRef.id);
+    console.log("Document written with ID: ");
   } catch (e) {
     console.error("Error adding document: ", e);
   }
 }
 
-export async function getAllUsers() {
-  const users = {};
-  const querySnapshot = await getDocs(collection(db, "users"));
-  querySnapshot.forEach((doc) => {
-    console.log(`${doc.id} => ${doc.data()}`);
-    users[doc.id] = doc.data();
-  });
-  return users;
+// export async function getAllUsers() {
+//   const users = {};
+//   const querySnapshot = await getDocs(collection(db, "portfolios"));
+//   querySnapshot.forEach((doc) => {
+//     console.log(`${doc.id} => ${doc.data()}`);
+//     users[doc.id] = doc.data();
+//   });
+//   return users;
+// }
+
+export async function getPortfolio(portfolioId) {
+  const portfolio = await getDoc(doc(db, "portfolios", portfolioId));
+  if (portfolio.exists()) {
+    console.log("Document data:", portfolio.data());
+  } else {
+    console.log("No such document!");
+  }
+  return portfolio.data().assets;
 }
 
-export async function getFirstUser() {
-  const snapshot = await getDocs(collection(db, "users"));
-  const users = snapshot.docs;
-  const firstUser = users[0].ref;
-  console.log({ firstUser, users });
-  return firstUser;
+export async function updatePortfolio(portfolioId, assets) {
+  const portfolio = doc(db, "portfolios", portfolioId);
+  await updateDoc(portfolio, { assets });
 }
 
-export async function updateFirstUser() {
-  // const firstUser = doc(collection(db, "users", users[0].id));
-  const firstUser = await getFirstUser();
-  await updateDoc(firstUser, {
-    born: 2006,
-  });
-}
-
-export async function deleteFirstUser() {
-  const firstUser = await getFirstUser();
-  await deleteDoc(firstUser);
-}
+// export async function deleteFirstUser() {
+//   const firstUser = await getFirstUser();
+//   await deleteDoc(firstUser);
+// }
