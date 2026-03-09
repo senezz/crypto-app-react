@@ -23,7 +23,7 @@ export default function SellAssetForm({ asset, open, onClose }) {
   const coin = crypto.find((c) => c.id === asset.id);
 
   function minValueOfCoin() {
-    return 10e-8;
+    return 0.0001;
   }
 
   function onFinish(values) {
@@ -90,7 +90,7 @@ export default function SellAssetForm({ asset, open, onClose }) {
             style={{ width: "100%" }}
             min={0}
             max={asset.amount}
-            step={0.01}
+            step={0.0001}
           />
         </Form.Item>
         <Divider />

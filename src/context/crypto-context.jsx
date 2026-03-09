@@ -19,12 +19,12 @@ export function CryptoContextProvider({ children }) {
     return portfolio.map((asset) => {
       const coin = result.find((c) => c.id === asset.id);
       return {
+        ...asset,
         grow: asset.price < coin.price,
         growPercent: percentDifference(asset.price, coin.price),
         totalAmount: asset.amount * coin.price,
         totalProfit: asset.amount * coin.price - asset.amount * asset.price,
         name: coin.name,
-        ...asset,
       };
     });
   }

@@ -27,7 +27,7 @@ export default function AppSider() {
   return (
     <Layout.Sider width="25%" style={siderStyle}>
       {portfolio.map((asset) => (
-        <Card key={asset.id} style={{ marginBottom: "1rem" }}>
+        <Card key={asset.id} style={{ marginBottom: "1rem", minWidth: 220 }}>
           <Statistic
             title={
               <div
@@ -35,6 +35,8 @@ export default function AppSider() {
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
+                  flexWrap: "wrap",
+                  gap: "0.5rem",
                 }}
               >
                 <span>{capitalize(asset.id)}</span>
@@ -78,7 +80,7 @@ export default function AppSider() {
                       {asset.growPercent}%
                     </Tag>
                   )}
-                  {item.isPlain && item.value}
+                  {item.isPlain && item.value.toFixed(4)}
                   {!item.isPlain && (
                     <Typography.Text type={asset.grow ? "success" : "danger"}>
                       {item.value.toFixed(2)}$
