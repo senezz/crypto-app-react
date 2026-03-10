@@ -4,12 +4,17 @@ import AppSider from "./AppSider";
 import AppContent from "./AppContent";
 import { useContext } from "react";
 import CryptoContext from "../../context/crypto-context";
+import LoginPage from "../LoginPage";
 
 export default function AppLayout() {
-  const { loading } = useContext(CryptoContext);
+  const { loading, login } = useContext(CryptoContext);
 
   if (loading) {
     return <Spin fullscreen />;
+  }
+
+  if (!login) {
+    return <LoginPage />;
   }
 
   return (

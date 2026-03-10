@@ -2,17 +2,21 @@ import { createContext, useState, useEffect, useContext } from "react";
 import { fakeFetchCrypto, fetchPortfolio } from "../api";
 import { percentDifference } from "../utils";
 import { updatePortfolio, getPortfolio } from "../firebase";
+import * as Auth from "../auth";
+import { getAuth } from "firebase/auth";
 
 const CryptoContext = createContext({
   portfolio: [],
   crypto: [],
   loading: false,
+  login: false,
 });
 
 export function CryptoContextProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [crypto, setCrypto] = useState([]);
   const [portfolio, setPortfolio] = useState([]);
+  const [login, setLogin] = useState(false);
 
   function mapPortfolio(portfolio, result) {
     updatePortfolio("test", portfolio);
@@ -32,6 +36,11 @@ export function CryptoContextProvider({ children }) {
   useEffect(() => {
     async function preLoad() {
       setLoading(true);
+      await new Promise((resolve) => setTimeout(() => resolve(true), 2000));
+      Auth.checkLoginState();
+      await new Promise((resolve) => setTimeout(() => resolve(true), 2000));
+      setLogin(getAuth().currentUser);
+      console.log(getAuth());
       // await createPortfolio("test");
       // const allUsers = await getAllUsers()
       // console.log({allUsers})
@@ -45,7 +54,7 @@ export function CryptoContextProvider({ children }) {
       console.log({ portfolio });
       setPortfolio(mapPortfolio(portfolio, result));
       setCrypto(result);
-      setTimeout(() => console.log(portfolio), 2000);
+      // setTimeout(() => console.log(portfolio), 2000);
       setLoading(false);
     }
     preLoad();
@@ -86,7 +95,15 @@ export function CryptoContextProvider({ children }) {
 
   return (
     <CryptoContext.Provider
-      value={{ loading, crypto, portfolio, addAsset, sellAsset }}
+      value={{
+        loading,
+        crypto,
+        portfolio,
+        addAsset,
+        sellAsset,
+        login,
+        setLogin,
+      }}
     >
       {children}
     </CryptoContext.Provider>
