@@ -7,7 +7,7 @@ import {
   Button,
   Modal,
 } from "antd";
-
+import { useState } from "react";
 import { useCrypto } from "../context/crypto-context";
 import CoinInfo from "./CoinInfo";
 
@@ -20,6 +20,7 @@ const validateMessages = {
 export default function SellAssetForm({ asset, open, onClose }) {
   const [form] = Form.useForm();
   const { crypto, sellAsset } = useCrypto();
+  const [total, setTotal] = useState(0);
   const coin = crypto.find((c) => c.id === asset.id);
 
   function minValueOfCoin() {
@@ -32,7 +33,7 @@ export default function SellAssetForm({ asset, open, onClose }) {
   }
 
   function handleAmountChange(amount) {
-    form.setFieldValue("amount", amount);
+    setTotal(amount ? +(amount * coin.price).toFixed(2) : 0);
   }
 
   return (
@@ -72,6 +73,10 @@ export default function SellAssetForm({ asset, open, onClose }) {
           <Typography.Text strong>${coin.price.toFixed(2)}</Typography.Text> per
           coin.
         </Typography.Paragraph>
+        <Typography.Paragraph>
+          How much would you like to sell?
+        </Typography.Paragraph>
+        <Divider />
         <Form.Item
           label="Amount"
           name="amount"
@@ -91,9 +96,20 @@ export default function SellAssetForm({ asset, open, onClose }) {
             min={0}
             max={asset.amount}
             step={0.0001}
+            parser={(value) => +parseFloat(value).toFixed(4)}
           />
         </Form.Item>
-        <Divider />
+        {total > 0 && (
+          <>
+            <Typography.Paragraph>
+              You will receive{" "}
+              <Typography.Text strong type="success">
+                ${total}
+              </Typography.Text>
+            </Typography.Paragraph>
+            <Divider />
+          </>
+        )}
         <Form.Item wrapperCol={{ span: 24 }}>
           <Flex gap="small" justify="flex-end" style={{ width: "100%" }}>
             <Button onClick={onClose}>Cancel</Button>
