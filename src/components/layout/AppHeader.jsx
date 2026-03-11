@@ -3,6 +3,8 @@ import { useCrypto } from "../../context/crypto-context";
 import { useEffect, useState } from "react";
 import CoinInfoModal from "../CoinInfoModal";
 import AddAssetForm from "../AddAssetForm";
+import { logout } from "../../auth";
+import { UserProfile } from "../UserProfile";
 
 const headerStyle = {
   width: "100%",
@@ -19,7 +21,7 @@ export default function AppHeader() {
   const [coin, setCoin] = useState(null);
   const [modal, setModal] = useState(false);
   const [drawer, setDrawer] = useState(false);
-  const { crypto } = useCrypto();
+  const { crypto, setUser } = useCrypto();
 
   useEffect(() => {
     const keypress = (event) => {
@@ -66,6 +68,9 @@ export default function AppHeader() {
       <Button type="primary" onClick={() => setDrawer(true)}>
         Add Asset
       </Button>
+
+      <UserProfile></UserProfile>
+      <Button onClick={() => logout(setUser)}>Logout</Button>
 
       <Modal open={modal} onCancel={() => setModal(false)} footer={null}>
         <CoinInfoModal coin={coin} />

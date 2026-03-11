@@ -24,7 +24,7 @@ export default function SellAllAssetsModal({ asset, open, onClose }) {
       <Typography.Paragraph>
         Are you sure you want to sell{" "}
         <Typography.Text strong>
-          {asset.amount} {asset.name}
+          {asset.amount.toFixed(4)} {asset.name}
         </Typography.Text>{" "}
         at the current price of{" "}
         <Typography.Text strong>${coin.price.toFixed(2)}</Typography.Text> per
