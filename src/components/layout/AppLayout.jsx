@@ -7,13 +7,13 @@ import CryptoContext from "../../context/crypto-context";
 import LoginPage from "../LoginPage";
 
 export default function AppLayout() {
-  const { loading, login } = useContext(CryptoContext);
+  const { loading, user } = useContext(CryptoContext);
 
   if (loading) {
     return <Spin fullscreen />;
   }
 
-  if (!login) {
+  if (!user) {
     return <LoginPage />;
   }
 

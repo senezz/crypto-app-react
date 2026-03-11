@@ -5,16 +5,15 @@ import {
   onAuthStateChanged,
   browserLocalPersistence,
   setPersistence,
+  signInWithPopup,
 } from "firebase/auth";
-import CryptoContext from "./context/crypto-context";
-import { useContext } from "react";
 
 const provider = new GoogleAuthProvider();
+export const auth = getAuth();
+setPersistence(auth, browserLocalPersistence);
 
 export async function login() {
-  const auth = getAuth();
-  await setPersistence(auth, browserLocalPersistence);
-  signInWithRedirect(auth, provider)
+  signInWithPopup(auth, provider)
     .then((result) => {
       // This gives you a Google Access Token. You can use it to access the Google API.
       const credential = GoogleAuthProvider.credentialFromResult(result);
@@ -41,18 +40,12 @@ export async function login() {
 }
 
 export function checkLoginState() {
-  const auth = getAuth();
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      // User is signed in, see docs for a list of available properties
-      // https://firebase.google.com/docs/reference/js/auth.user
-      const uid = user.uid;
       console.log({ user });
-      // ...
+      setUser(user);
     } else {
       console.log("Sign out");
-      // User is signed out
-      // ...
     }
   });
 }
