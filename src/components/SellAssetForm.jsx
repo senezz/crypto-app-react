@@ -6,6 +6,7 @@ import {
   InputNumber,
   Button,
   Modal,
+  message,
 } from "antd";
 import { useState } from "react";
 import { useCrypto } from "../context/crypto-context";
@@ -33,7 +34,18 @@ export default function SellAssetForm({ asset, open, onClose }) {
   }
 
   function handleAmountChange(amount) {
-    setTotal(amount ? +(amount * coin.price).toFixed(2) : 0);
+    if (!amount) {
+      setTotal(0);
+      return;
+    }
+    const decimals = amount.toString().split(".")[1];
+    if (decimals && decimals.length > 4) {
+      form.resetFields(["amount"]);
+      setTotal(0);
+      message.error("No more than 4 decimal places allowed");
+      return;
+    }
+    setTotal(+(amount * coin.price).toFixed(2));
   }
 
   return (
@@ -56,9 +68,6 @@ export default function SellAssetForm({ asset, open, onClose }) {
         style={{
           maxWidth: 600,
         }}
-        initialValues={{
-          amount: 0,
-        }}
         onFinish={onFinish}
         validateMessages={validateMessages}
       >
@@ -67,7 +76,7 @@ export default function SellAssetForm({ asset, open, onClose }) {
         <Typography.Paragraph>
           You currently hold{" "}
           <Typography.Text strong>
-            {asset.amount} {asset.name}
+            {asset.amount.toFixed(4)} {asset.name}
           </Typography.Text>{" "}
           at the current price of{" "}
           <Typography.Text strong>${coin.price.toFixed(2)}</Typography.Text> per
@@ -86,6 +95,17 @@ export default function SellAssetForm({ asset, open, onClose }) {
               type: "number",
               min: minValueOfCoin(),
               max: asset.amount,
+              message: "You don't have enough coins",
+            },
+            {
+              validator(_, amount) {
+                if (amount && amount.toString().split(".")[1]?.length > 4) {
+                  return Promise.reject(
+                    "No more than 4 decimal places allowed",
+                  );
+                }
+                return Promise.resolve();
+              },
             },
           ]}
         >
@@ -96,7 +116,6 @@ export default function SellAssetForm({ asset, open, onClose }) {
             min={0}
             max={asset.amount}
             step={0.0001}
-            parser={(value) => +parseFloat(value).toFixed(4)}
           />
         </Form.Item>
         {total > 0 && (
