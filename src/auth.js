@@ -6,6 +6,7 @@ import {
   browserLocalPersistence,
   setPersistence,
   signInWithPopup,
+  signOut,
 } from "firebase/auth";
 
 const provider = new GoogleAuthProvider();
@@ -39,7 +40,17 @@ export async function login() {
     });
 }
 
-export function checkLoginState() {
+export async function logout(setUser) {
+  const auth = getAuth();
+  signOut(auth)
+    .then(() => {
+      setUser(null);
+    })
+    .catch((error) => {});
+  console.log("logout");
+}
+
+export function checkLoginState(setUser) {
   onAuthStateChanged(auth, (user) => {
     if (user) {
       console.log({ user });

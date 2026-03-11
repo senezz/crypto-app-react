@@ -35,7 +35,7 @@ export function CryptoContextProvider({ children }) {
   useEffect(() => {
     async function preLoad() {
       setLoading(true);
-      Auth.checkLoginState();
+      Auth.checkLoginState(setUser);
       setUser(Auth.auth.currentUser);
       console.log(Auth.auth);
       // await createPortfolio("test");
