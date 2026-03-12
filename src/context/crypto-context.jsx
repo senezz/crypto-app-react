@@ -18,44 +18,45 @@ export function CryptoContextProvider({ children }) {
   const [user, setUser] = useState(false);
 
   function mapPortfolio(portfolio, result) {
-    updatePortfolio("test", portfolio);
-    return portfolio.map((asset) => {
-      const coin = result.find((c) => c.id === asset.id);
-      return {
-        ...asset,
-        grow: asset.price < coin.price,
-        growPercent: percentDifference(asset.price, coin.price),
-        totalAmount: asset.amount * coin.price,
-        totalProfit: asset.amount * coin.price - asset.amount * asset.price,
-        name: coin.name,
-      };
-    });
+    updatePortfolio(user.uid, portfolio);
+    if (portfolio) {
+      return portfolio.map((asset) => {
+        const coin = result.find((c) => c.id === asset.id);
+        return {
+          ...asset,
+          grow: asset.price < coin.price,
+          growPercent: percentDifference(asset.price, coin.price),
+          totalAmount: asset.amount * coin.price,
+          totalProfit: asset.amount * coin.price - asset.amount * asset.price,
+          name: coin.name,
+        };
+      });
+    } else {
+      return [];
+    }
   }
 
   useEffect(() => {
     async function preLoad() {
       setLoading(true);
-      Auth.checkLoginState(setUser);
-      setUser(Auth.auth.currentUser);
-      console.log(Auth.auth);
-      // await createPortfolio("test");
-      // const allUsers = await getAllUsers()
-      // console.log({allUsers})
-      const { result } = await fakeFetchCrypto();
-      // console.log({ result })
-      const portfolio = await getPortfolio("test");
-
-      // await updatePortfolio("test");
-      // await deleteFirstUser()
-      // await deleteFirstUser()
-      console.log({ portfolio });
-      setPortfolio(mapPortfolio(portfolio, result));
-      setCrypto(result);
-      // setTimeout(() => console.log(portfolio), 2000);
-      setLoading(false);
+      const newUser = await Auth.checkLoginState();
+      setUser(newUser);
     }
     preLoad();
   }, []);
+
+  useEffect(() => {
+    async function preUserUpdate() {
+      if (user) {
+        const { result } = await fakeFetchCrypto();
+        const portfolio = await getPortfolio(user.uid);
+        setPortfolio(mapPortfolio(portfolio, result));
+        setCrypto(result);
+        setLoading(false);
+      }
+    }
+    preUserUpdate();
+  }, [user]);
 
   function addAsset(newAsset) {
     setPortfolio((prev) => {

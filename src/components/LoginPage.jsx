@@ -1,18 +1,37 @@
-import { Button, Layout } from "antd";
+import { Button, Layout, Space, Avatar } from "antd";
 import * as Auth from "../auth";
+import { useCrypto } from "../context/crypto-context";
+
+const { Content } = Layout;
 
 export default function LoginPage() {
+  const { setUser } = useCrypto();
   return (
     <Layout
       style={{
-        width: "100vw",
-        height: "100vh",
-        top: "0px",
-        left: "0px",
-        position: "absolute",
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
-      <Button onClick={() => Auth.login()}>Login</Button>
+      <Content
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Space orientation="vertical" style={{ width: "100%" }}>
+          <Button block onClick={() => Auth.login(setUser)}>
+            Sign in with Google <Avatar src="" size={24} />
+          </Button>
+          <Button block onClick={() => Auth.loginWithTelegram()}>
+            Sign in with Telegram{<Avatar src="" size={24} />}
+          </Button>
+        </Space>
+      </Content>
     </Layout>
   );
 }

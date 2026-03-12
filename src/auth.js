@@ -13,7 +13,7 @@ const provider = new GoogleAuthProvider();
 export const auth = getAuth();
 setPersistence(auth, browserLocalPersistence);
 
-export async function login() {
+export async function login(setUser) {
   signInWithPopup(auth, provider)
     .then((result) => {
       // This gives you a Google Access Token. You can use it to access the Google API.
@@ -21,9 +21,7 @@ export async function login() {
       const token = credential.accessToken;
       // The signed-in user info.
       const user = result.user;
-      console.log({ user });
-      const extraInfo = getAdditionalUserInfo(result);
-      console.log({ extraInfo });
+      setUser(user);
       // IdP data available using getAdditionalUserInfo(result)
       // ...
     })
@@ -32,7 +30,7 @@ export async function login() {
       const errorCode = error.code;
       const errorMessage = error.message;
       // The email of the user's account used.
-      const email = error.customData.email;
+      const email = error.customData?.email;
       // The AuthCredential type that was used.
       const credential = GoogleAuthProvider.credentialFromError(error);
       console.error(errorCode, errorMessage);
@@ -47,16 +45,18 @@ export async function logout(setUser) {
       setUser(null);
     })
     .catch((error) => {});
-  console.log("logout");
 }
 
-export function checkLoginState(setUser) {
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      console.log({ user });
-      setUser(user);
-    } else {
-      console.log("Sign out");
-    }
+export async function loginWithTelegram() {
+  throw new Error("Telegram auth not implemented");
+}
+
+export function checkLoginState() {
+  return new Promise((resolve) => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        resolve(user);
+      }
+    });
   });
 }

@@ -23,7 +23,6 @@ export default function AppSider() {
   const { portfolio, sellAsset } = useContext(CryptoContext);
   const [forSellAsset, setForSellAsset] = useState(null);
   const [forSellAllAsset, setForSellAllAsset] = useState(null);
-
   return (
     <Layout.Sider width="25%" style={siderStyle}>
       {portfolio.map((asset) => (
