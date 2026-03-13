@@ -1,14 +1,32 @@
-import { UserOutlined } from "@ant-design/icons";
-import { Avatar, Space, Typography, Flex } from "antd";
+import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
+import { Avatar, Space, Typography, Flex, Popover, Button } from "antd";
 import { useCrypto } from "../context/crypto-context";
+import { logout } from "../auth";
 
 export function UserProfile() {
-  const { user } = useCrypto();
+  const { user, setUser } = useCrypto();
+  const popoverContent = (
+    <Button
+      type="text"
+      danger
+      icon={<LogoutOutlined />}
+      onClick={() => logout(setUser)}
+      style={{ width: "100%" }}
+    >
+      Logout
+    </Button>
+  );
+
   return (
-    <div>
-      <Space wrap size={16}>
-        <Avatar size={36} src={user.photoURL} icon={<UserOutlined />} />
-        <Flex vertical>
+    <Popover content={popoverContent} trigger="click" placement="bottomRight">
+      <Space size={12}>
+        <Avatar
+          size={36}
+          src={user.photoURL}
+          icon={<UserOutlined />}
+          style={{ cursor: "pointer" }}
+        />
+        <Flex vertical style={{ cursor: "pointer" }}>
           <Typography.Text style={{ color: "#ffffff" }}>
             {user.displayName ?? "Username"}
           </Typography.Text>
@@ -17,6 +35,6 @@ export function UserProfile() {
           </Typography.Text>
         </Flex>
       </Space>
-    </div>
+    </Popover>
   );
 }

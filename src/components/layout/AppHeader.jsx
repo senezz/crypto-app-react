@@ -3,8 +3,8 @@ import { useCrypto } from "../../context/crypto-context";
 import { useEffect, useState } from "react";
 import CoinInfoModal from "../CoinInfoModal";
 import AddAssetForm from "../AddAssetForm";
-import { logout } from "../../auth";
 import { UserProfile } from "../UserProfile";
+import TelegramLoginButton from "../TelegramLoginButton";
 
 const headerStyle = {
   width: "100%",
@@ -21,7 +21,7 @@ export default function AppHeader() {
   const [coin, setCoin] = useState(null);
   const [modal, setModal] = useState(false);
   const [drawer, setDrawer] = useState(false);
-  const { crypto, setUser } = useCrypto();
+  const { crypto } = useCrypto();
 
   useEffect(() => {
     const keypress = (event) => {
@@ -65,12 +65,15 @@ export default function AppHeader() {
         )}
       />
 
-      <Button type="primary" onClick={() => setDrawer(true)}>
-        Add Asset
-      </Button>
+      <Space size={16} align="center">
+        <Button type="primary" onClick={() => setDrawer(true)}>
+          Add Asset
+        </Button>
 
-      <UserProfile></UserProfile>
-      <Button onClick={() => logout(setUser)}>Logout</Button>
+        <UserProfile />
+
+        <TelegramLoginButton />
+      </Space>
 
       <Modal open={modal} onCancel={() => setModal(false)} footer={null}>
         <CoinInfoModal coin={coin} />

@@ -32,35 +32,35 @@ export async function createPortfolio(portfolioId) {
     await setDoc(doc(db, "portfolios", portfolioId), {
       assets: [],
     });
-    console.log("Document written with ID: ");
+    // console.log("Document written with ID: ");
   } catch (e) {
     console.error("Error adding document: ", e);
   }
 }
 
-// export async function getAllUsers() {
-//   const users = {};
-//   const querySnapshot = await getDocs(collection(db, "portfolios"));
-//   querySnapshot.forEach((doc) => {
-//     console.log(`${doc.id} => ${doc.data()}`);
-//     users[doc.id] = doc.data();
-//   });
-//   return users;
-// }
-
 export async function getPortfolio(portfolioId) {
-  const portfolio = await getDoc(doc(db, "portfolios", portfolioId));
-  if (portfolio.exists()) {
-    console.log("Document data:", portfolio.data());
-  } else {
-    console.log("No such document!");
+  try {
+    const portfolio = await getDoc(doc(db, "portfolios", portfolioId));
+    if (portfolio.exists()) {
+      console.log("Document data:", portfolio.data());
+      return portfolio.data().assets;
+    } else {
+      console.log("No such document!");
+      await createPortfolio(portfolioId);
+    }
+  } catch (e) {
+    console.error(e);
   }
-  return portfolio.data().assets;
+  return [];
 }
 
 export async function updatePortfolio(portfolioId, assets) {
-  const portfolio = doc(db, "portfolios", portfolioId);
-  await updateDoc(portfolio, { assets });
+  try {
+    const portfolio = doc(db, "portfolios", portfolioId);
+    await updateDoc(portfolio, { assets });
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 // export async function deleteFirstUser() {
