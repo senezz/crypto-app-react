@@ -53,6 +53,8 @@ export function CryptoContextProvider({ children }) {
         setPortfolio(mapPortfolio(portfolio, result));
         setCrypto(result);
         setLoading(false);
+      } else if (user === null) {
+        setLoading(false);
       }
     }
     preUserUpdate();

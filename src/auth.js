@@ -1,6 +1,5 @@
 import {
   getAuth,
-  signInWithRedirect,
   GoogleAuthProvider,
   onAuthStateChanged,
   browserLocalPersistence,
@@ -54,9 +53,7 @@ export async function loginWithTelegram() {
 export function checkLoginState() {
   return new Promise((resolve) => {
     onAuthStateChanged(auth, (user) => {
-      if (user) {
-        resolve(user);
-      }
+      resolve(user ?? null);
     });
   });
 }
