@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import CoinInfoModal from "../CoinInfoModal";
 import AddAssetForm from "../AddAssetForm";
 import { UserProfile } from "../UserProfile";
+import TelegramLoginButton from "../TelegramLoginButton";
 
 const headerStyle = {
   width: "100%",
@@ -70,6 +71,8 @@ export default function AppHeader() {
         </Button>
 
         <UserProfile />
+
+        <TelegramLoginButton />
       </Space>
 
       <Modal open={modal} onCancel={() => setModal(false)} footer={null}>

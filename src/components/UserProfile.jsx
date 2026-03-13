@@ -18,23 +18,23 @@ export function UserProfile() {
   );
 
   return (
-    <Space size={12}>
-      <Popover content={popoverContent} trigger="click" placement="bottomRight">
+    <Popover content={popoverContent} trigger="click" placement="bottomRight">
+      <Space size={12}>
         <Avatar
           size={36}
           src={user.photoURL}
           icon={<UserOutlined />}
           style={{ cursor: "pointer" }}
         />
-      </Popover>
-      <Flex vertical>
-        <Typography.Text style={{ color: "#ffffff" }}>
-          {user.displayName ?? "Username"}
-        </Typography.Text>
-        <Typography.Text style={{ color: "#ffffff" }}>
-          {user.email ?? "Email"}
-        </Typography.Text>
-      </Flex>
-    </Space>
+        <Flex vertical style={{ cursor: "pointer" }}>
+          <Typography.Text style={{ color: "#ffffff" }}>
+            {user.displayName ?? "Username"}
+          </Typography.Text>
+          <Typography.Text style={{ color: "#ffffff" }}>
+            {user.email ?? "Email"}
+          </Typography.Text>
+        </Flex>
+      </Space>
+    </Popover>
   );
 }
