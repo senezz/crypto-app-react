@@ -30,7 +30,7 @@ export default function AssetsTable() {
     key: a.id,
     name: a.name,
     price: a.price.toFixed(2),
-    amount: a.amount,
+    amount: a.amount.toFixed(4),
   }));
 
   return (
