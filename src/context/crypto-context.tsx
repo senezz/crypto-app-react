@@ -2,31 +2,46 @@ import { createContext, useState, useEffect, useContext } from "react";
 import { fakeFetchCrypto, fetchPortfolio } from "../api";
 import { percentDifference } from "../utils";
 import { updatePortfolio, getPortfolio } from "../firebase";
+import {
+  Asset,
+  CryptoContextType,
+  Coin,
+  CryptoContextProps,
+  Portfolio,
+  Crypto,
+  CryptoContextSimpleType,
+} from "../types/types";
 
-const CryptoContext = createContext({
+const CryptoContext = createContext<CryptoContextType>({
   portfolio: [],
   crypto: [],
   loading: false,
+  addAsset: () => {},
+  sellAsset: () => {},
 });
 
-export function CryptoContextProvider({ children }) {
-  const [loading, setLoading] = useState(false);
-  const [crypto, setCrypto] = useState([]);
-  const [portfolio, setPortfolio] = useState([]);
+export function CryptoContextProvider({ children }: CryptoContextProps) {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [crypto, setCrypto] = useState<Crypto>([]);
+  const [portfolio, setPortfolio] = useState<Portfolio>([]);
 
-  function mapPortfolio(portfolio, result) {
+  function mapPortfolio(portfolio: Portfolio, result: Crypto): Portfolio {
     updatePortfolio("test", portfolio);
     return portfolio.map((asset) => {
       const coin = result.find((c) => c.id === asset.id);
-      return {
-        ...asset,
-        grow: asset.price < coin.price,
-        growPercent: percentDifference(asset.price, coin.price),
-        totalAmount: asset.amount * coin.price,
-        totalProfit: asset.amount * coin.price - asset.amount * asset.price,
-        name: coin.name,
-      };
-    });
+      if (coin) {
+        return {
+          ...asset,
+          grow: asset.price < coin.price,
+          growPercent: percentDifference(asset.price, coin.price),
+          totalAmount: asset.amount * coin.price,
+          totalProfit: asset.amount * coin.price - asset.amount * asset.price,
+          name: coin.name,
+        };
+      } else {
+        return portfolio;
+      }
+    }) as Portfolio;
   }
 
   useEffect(() => {
@@ -51,7 +66,7 @@ export function CryptoContextProvider({ children }) {
     preLoad();
   }, []);
 
-  function addAsset(newAsset) {
+  function addAsset(newAsset: Asset) {
     setPortfolio((prev) => {
       console.log({ prev, newAsset });
       const existedAssetIndex = prev.findIndex((a) => a.id === newAsset.id);
@@ -71,7 +86,7 @@ export function CryptoContextProvider({ children }) {
     });
   }
 
-  function sellAsset(assetId, sellAmount) {
+  function sellAsset(assetId: string, sellAmount: number) {
     setPortfolio((prev) =>
       mapPortfolio(
         prev
@@ -84,10 +99,16 @@ export function CryptoContextProvider({ children }) {
     );
   }
 
+  const contextValue: CryptoContextType = {
+    loading,
+    crypto,
+    portfolio: portfolio as Portfolio,
+    addAsset,
+    sellAsset,
+  };
+
   return (
-    <CryptoContext.Provider
-      value={{ loading, crypto, portfolio, addAsset, sellAsset }}
-    >
+    <CryptoContext.Provider value={contextValue}>
       {children}
     </CryptoContext.Provider>
   );
