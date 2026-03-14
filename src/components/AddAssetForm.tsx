@@ -11,6 +11,18 @@ import {
 import { useState, useRef } from "react";
 import { useCrypto } from "../context/crypto-context";
 import CoinInfo from "./CoinInfo";
+import {
+  Asset,
+  CryptoContextType,
+  Coin,
+  CryptoContextProps,
+  Portfolio,
+  Crypto,
+} from "../types/types";
+
+interface addAssetFormProps {
+  onClose: () => void;
+}
 
 const validateMessages = {
   required: "${label} is required!",
@@ -22,19 +34,30 @@ const validateMessages = {
   },
 };
 
-export default function AddAssetForm({ onClose }) {
+export default function AddAssetForm({ onClose }: addAssetFormProps) {
   const [form] = Form.useForm();
   const { crypto, addAsset } = useCrypto();
-  const [coin, setCoin] = useState(null);
+  const [coin, setCoin] = useState<Coin | null | undefined>(null);
   const [submitted, setSubmitted] = useState(false);
-  const assetRef = useRef();
+  const assetRef = useRef<Asset | undefined>(undefined);
 
   if (submitted) {
+    let amount, price;
+    const currentAsset = assetRef.current;
+    if (currentAsset) {
+      amount = (currentAsset as Asset).amount;
+      price = (currentAsset as Asset).amount;
+    }
+    let coinName;
+    if (coin) {
+      coinName = coin.name;
+    }
+
     return (
       <Result
         status="success"
         title="New Asset Added"
-        subTitle={`Added ${assetRef.current.amount} of ${coin.name} by price ${assetRef.current.price}`}
+        subTitle={`Added ${amount} of ${coinName} by price ${price}`}
         extra={[
           <Button type="primary" key="console" onClick={onClose}>
             Close
@@ -62,7 +85,7 @@ export default function AddAssetForm({ onClose }) {
             <img
               style={{ width: 20 }}
               src={option.data.icon}
-              atl={option.data.label}
+              alt={option.data.label}
             />{" "}
             {option.data.label}
           </Space>
@@ -71,29 +94,29 @@ export default function AddAssetForm({ onClose }) {
     );
   }
 
-  function onFinish(values) {
-    const newAsset = {
-      id: coin.id,
+  function onFinish(values: Asset) {
+    const newAsset: Asset = {
+      id: coin?.id ?? "",
       amount: values.amount,
       price: values.price,
-      date: values.date?.$d ?? new Date(),
+      date: values.date ?? new Date(),
     };
     assetRef.current = newAsset;
     setSubmitted(true);
     addAsset(newAsset);
   }
 
-  function handleAmountChange(value) {
+  function handleAmountChange(value: number | null) {
     const price = form.getFieldValue("price");
     form.setFieldsValue({
-      total: +(value * price).toFixed(2),
+      total: ((value ?? 0) * +price).toFixed(2),
     });
   }
 
-  function handlePriceChange(value) {
+  function handlePriceChange(value: number | null) {
     const amount = form.getFieldValue("amount");
     form.setFieldsValue({
-      total: +(amount * value).toFixed(2),
+      total: (+amount * (value ?? 0)).toFixed(2),
     });
   }
 

@@ -4,7 +4,7 @@ import { useCrypto } from "../../context/crypto-context";
 import PortfolioChart from "../PortfolioChart";
 import AssetsTable from "../AssetsTable";
 
-const contentStyle = {
+const contentStyle: React.CSSProperties = {
   textAlign: "center",
   minHeight: "calc(100vh - 60px)",
   color: "#fff",
@@ -15,7 +15,16 @@ const contentStyle = {
 export default function AppContent() {
   const { portfolio, crypto } = useCrypto();
 
-  const cryptoPriceMap = crypto.reduce((acc, c) => {
+  interface Coin {
+    id: string;
+    price: number;
+  }
+
+  type mapCoinPrice = {
+    [key: string]: number;
+  };
+
+  const cryptoPriceMap = crypto.reduce((acc: mapCoinPrice, c: Coin) => {
     acc[c.id] = c.price;
     return acc;
   }, {});
@@ -33,6 +42,9 @@ export default function AppContent() {
     .reduce((acc, v) => (acc += v), 0)
     .toFixed(2);
 
+  const totalProfitNum: number = +totalProfit;
+  const totalPortfolioNum: number = +totalPortfolio;
+
   return (
     <Layout.Content style={contentStyle}>
       <Typography.Title level={3} style={{ textAlign: "left", color: "#fff" }}>
@@ -45,23 +57,25 @@ export default function AppContent() {
         style={{ width: "100%" }}
       >
         <Statistic
-          value={Math.abs(totalProfit)}
+          value={Math.abs(totalProfitNum)}
           precision={2}
           styles={{
-            content: { color: totalProfit > 0 ? "#60be0e" : "#e63948" },
+            content: { color: totalProfitNum > 0 ? "#60be0e" : "#e63948" },
           }}
-          prefix={totalProfit > 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+          prefix={
+            totalProfitNum > 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />
+          }
           suffix="$"
         />
         <Tag
           style={{
             padding: "2px 5px",
             fontWeight: "bold",
-            backgroundColor: totalProfit > 0 ? "#d1f5b2" : "#be8489",
+            backgroundColor: totalProfitNum > 0 ? "#d1f5b2" : "#be8489",
           }}
-          color={totalProfit > 0 ? "#4c9b07" : "#b81927"}
+          color={totalProfitNum > 0 ? "#4c9b07" : "#b81927"}
         >
-          {Math.abs((totalProfit / totalPortfolio) * 100).toFixed(2)}%
+          {Math.abs((totalProfitNum / totalPortfolioNum) * 100).toFixed(2)}%
         </Tag>
       </Flex>
       <PortfolioChart />

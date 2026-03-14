@@ -5,8 +5,16 @@ import CoinInfoModal from "../CoinInfoModal";
 import AddAssetForm from "../AddAssetForm";
 import { UserProfile } from "../UserProfile";
 import TelegramLoginButton from "../TelegramLoginButton";
+import {
+  Asset,
+  CryptoContextType,
+  Coin,
+  CryptoContextProps,
+  Portfolio,
+  Crypto,
+} from "../../types/types";
 
-const headerStyle = {
+const headerStyle: React.CSSProperties = {
   width: "100%",
   textAlign: "center",
   height: 60,
@@ -18,13 +26,13 @@ const headerStyle = {
 
 export default function AppHeader() {
   const [select, setSelect] = useState(false);
-  const [coin, setCoin] = useState(null);
+  const [coin, setCoin] = useState<Coin | null | undefined>(null);
   const [modal, setModal] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const { crypto } = useCrypto();
 
   useEffect(() => {
-    const keypress = (event) => {
+    const keypress = (event: KeyboardEvent) => {
       if (event.key === "/") {
         setSelect((prev) => !prev);
       }
@@ -33,7 +41,7 @@ export default function AppHeader() {
     return () => document.removeEventListener("keypress", keypress);
   }, []);
 
-  function handleSelect(value) {
+  function handleSelect(value: string) {
     setCoin(crypto.find((c) => c.id === value));
     setModal(true);
   }
@@ -58,7 +66,7 @@ export default function AppHeader() {
             <img
               style={{ width: 20 }}
               src={option.data.icon}
-              atl={option.data.label}
+              alt={option.data.label}
             />{" "}
             {option.data.label}
           </Space>
