@@ -3,36 +3,49 @@ import { fakeFetchCrypto, fetchPortfolio } from "../api";
 import { percentDifference } from "../utils";
 import { updatePortfolio, getPortfolio } from "../firebase";
 import * as Auth from "../auth";
+import {
+  Asset,
+  CryptoContextType,
+  Coin,
+  CryptoContextProps,
+  Portfolio,
+  Crypto,
+  CryptoContextSimpleType,
+} from "../types/types";
 
-const CryptoContext = createContext({
+const CryptoContext = createContext<CryptoContextType>({
   portfolio: [],
   crypto: [],
   loading: false,
   user: false,
+  addAsset: () => {},
+  sellAsset: () => {},
 });
 
-export function CryptoContextProvider({ children }) {
-  const [loading, setLoading] = useState(false);
-  const [crypto, setCrypto] = useState([]);
-  const [portfolio, setPortfolio] = useState([]);
+export function CryptoContextProvider({ children }: CryptoContextProps) {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [crypto, setCrypto] = useState<Crypto>([]);
+  const [portfolio, setPortfolio] = useState<Portfolio>([]);
   const [user, setUser] = useState(false);
 
-  function mapPortfolio(portfolio, result) {
+  function mapPortfolio(portfolio: Portfolio, result: Crypto): Portfolio {
     updatePortfolio(user.uid, portfolio);
     if (portfolio) {
       return portfolio.map((asset) => {
         const coin = result.find((c) => c.id === asset.id);
-        return {
-          ...asset,
-          grow: asset.price < coin.price,
-          growPercent: percentDifference(asset.price, coin.price),
-          totalAmount: asset.amount * coin.price,
-          totalProfit: asset.amount * coin.price - asset.amount * asset.price,
-          name: coin.name,
-        };
-      });
-    } else {
-      return [];
+        if (coin) {
+          return {
+            ...asset,
+            grow: asset.price < coin.price,
+            growPercent: percentDifference(asset.price, coin.price),
+            totalAmount: asset.amount * coin.price,
+            totalProfit: asset.amount * coin.price - asset.amount * asset.price,
+            name: coin.name,
+          };
+        } else {
+          return portfolio;
+        }
+      }) as Portfolio;
     }
   }
 
@@ -60,7 +73,7 @@ export function CryptoContextProvider({ children }) {
     preUserUpdate();
   }, [user]);
 
-  function addAsset(newAsset) {
+  function addAsset(newAsset: Asset) {
     setPortfolio((prev) => {
       const existedAssetIndex = prev.findIndex((a) => a.id === newAsset.id);
       if (existedAssetIndex === -1) {
@@ -83,7 +96,7 @@ export function CryptoContextProvider({ children }) {
     });
   }
 
-  function sellAsset(assetId, sellAmount) {
+  function sellAsset(assetId: string, sellAmount: number) {
     setPortfolio((prev) =>
       mapPortfolio(
         prev
@@ -96,18 +109,16 @@ export function CryptoContextProvider({ children }) {
     );
   }
 
+  const contextValue: CryptoContextType = {
+    loading,
+    crypto,
+    portfolio: portfolio as Portfolio,
+    addAsset,
+    sellAsset,
+  };
+
   return (
-    <CryptoContext.Provider
-      value={{
-        loading,
-        crypto,
-        portfolio,
-        addAsset,
-        sellAsset,
-        user,
-        setUser,
-      }}
-    >
+    <CryptoContext.Provider value={contextValue}>
       {children}
     </CryptoContext.Provider>
   );

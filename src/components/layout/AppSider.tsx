@@ -14,6 +14,14 @@ import { useContext, useState } from "react";
 import CryptoContext from "../../context/crypto-context";
 import SellAssetForm from "../SellAssetForm";
 import SellAllAssetsModal from "../SellAllAssetsModal";
+import {
+  Asset,
+  CryptoContextType,
+  Coin,
+  CryptoContextProps,
+  Portfolio,
+  Crypto,
+} from "../../types/types";
 
 const siderStyle = {
   padding: "1rem",
@@ -21,8 +29,9 @@ const siderStyle = {
 
 export default function AppSider() {
   const { portfolio, sellAsset } = useContext(CryptoContext);
-  const [forSellAsset, setForSellAsset] = useState(null);
-  const [forSellAllAsset, setForSellAllAsset] = useState(null);
+  const [forSellAsset, setForSellAsset] = useState<Asset | null>(null);
+  const [forSellAllAsset, setForSellAllAsset] = useState<Asset | null>(null);
+
   return (
     <Layout.Sider width="25%" style={siderStyle}>
       {portfolio.map((asset) => (
@@ -82,7 +91,7 @@ export default function AppSider() {
                   {item.isPlain && item.value.toFixed(4)}
                   {!item.isPlain && (
                     <Typography.Text type={asset.grow ? "success" : "danger"}>
-                      {item.value.toFixed(2)}$
+                      {item?.value?.toFixed(2)}$
                     </Typography.Text>
                   )}
                 </span>
