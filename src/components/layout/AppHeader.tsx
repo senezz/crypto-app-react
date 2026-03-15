@@ -5,14 +5,7 @@ import CoinInfoModal from "../CoinInfoModal";
 import AddAssetForm from "../AddAssetForm";
 import { UserProfile } from "../UserProfile";
 import TelegramLoginButton from "../TelegramLoginButton";
-import {
-  Asset,
-  CryptoContextType,
-  Coin,
-  CryptoContextProps,
-  Portfolio,
-  Crypto,
-} from "../../types/types";
+import { Coin } from "../../types/types";
 
 const headerStyle: React.CSSProperties = {
   width: "100%",
@@ -26,7 +19,7 @@ const headerStyle: React.CSSProperties = {
 
 export default function AppHeader() {
   const [select, setSelect] = useState(false);
-  const [coin, setCoin] = useState<Coin | null | undefined>(null);
+  const [coin, setCoin] = useState<Coin | null>(null);
   const [modal, setModal] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const { crypto } = useCrypto();
@@ -41,8 +34,8 @@ export default function AppHeader() {
     return () => document.removeEventListener("keypress", keypress);
   }, []);
 
-  function handleSelect(value: string) {
-    setCoin(crypto.find((c) => c.id === value));
+  function handleSelect(value: string): void {
+    setCoin(crypto.find((c) => c.id === value) ?? null);
     setModal(true);
   }
 

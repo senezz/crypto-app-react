@@ -1,10 +1,22 @@
 import { Modal, Typography, Flex, Button, Divider } from "antd";
 import { useCrypto } from "../context/crypto-context";
 import CoinInfo from "./CoinInfo";
+import { Asset } from "../types/types";
 
-export default function SellAllAssetsModal({ asset, open, onClose }) {
+interface SellAllAssetsModalProps {
+  asset: Asset;
+  open: boolean;
+  onClose: () => void;
+}
+
+export default function SellAllAssetsModal({
+  asset,
+  open,
+  onClose,
+}: SellAllAssetsModalProps) {
   const { crypto, sellAsset } = useCrypto();
   const coin = crypto.find((c) => c.id === asset.id);
+  if (!coin) return null;
   const totalValue = (asset.amount * coin.price).toFixed(2);
 
   function handleConfirm() {

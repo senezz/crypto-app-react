@@ -1,6 +1,7 @@
+import type { Asset } from "./types/types";
 export function getCryptoData() {}
 
-export const cryptoPortfolio = [
+export const cryptoPortfolio: Asset[] = [
   {
     id: "bitcoin",
     amount: 0.02,

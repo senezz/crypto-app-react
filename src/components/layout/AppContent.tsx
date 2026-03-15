@@ -4,6 +4,15 @@ import { useCrypto } from "../../context/crypto-context";
 import PortfolioChart from "../PortfolioChart";
 import AssetsTable from "../AssetsTable";
 
+interface Coin {
+  id: string;
+  price: number;
+}
+
+type mapCoinPrice = {
+  [key: string]: number;
+};
+
 const contentStyle: React.CSSProperties = {
   textAlign: "center",
   minHeight: "calc(100vh - 60px)",
@@ -14,15 +23,6 @@ const contentStyle: React.CSSProperties = {
 
 export default function AppContent() {
   const { portfolio, crypto } = useCrypto();
-
-  interface Coin {
-    id: string;
-    price: number;
-  }
-
-  type mapCoinPrice = {
-    [key: string]: number;
-  };
 
   const cryptoPriceMap = crypto.reduce((acc: mapCoinPrice, c: Coin) => {
     acc[c.id] = c.price;

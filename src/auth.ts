@@ -7,17 +7,21 @@ import {
   signInWithPopup,
   signOut,
 } from "firebase/auth";
+import type { User } from "firebase/auth";
+import type { Dispatch, SetStateAction } from "react";
 
 const provider = new GoogleAuthProvider();
 export const auth = getAuth();
 setPersistence(auth, browserLocalPersistence);
 
-export async function login(setUser) {
+export async function login(
+  setUser: Dispatch<SetStateAction<User | null | false>>,
+): Promise<void> {
   signInWithPopup(auth, provider)
     .then((result) => {
       // This gives you a Google Access Token. You can use it to access the Google API.
       const credential = GoogleAuthProvider.credentialFromResult(result);
-      const token = credential.accessToken;
+      const token = credential?.accessToken;
       // The signed-in user info.
       const user = result.user;
       setUser(user);
@@ -37,7 +41,9 @@ export async function login(setUser) {
     });
 }
 
-export async function logout(setUser) {
+export async function logout(
+  setUser: Dispatch<SetStateAction<User | null | false>>,
+): Promise<void> {
   const auth = getAuth();
   signOut(auth)
     .then(() => {
@@ -46,11 +52,11 @@ export async function logout(setUser) {
     .catch((error) => {});
 }
 
-export async function loginWithTelegram() {
+export async function loginWithTelegram(): Promise<never> {
   throw new Error("Telegram auth not implemented");
 }
 
-export function checkLoginState() {
+export function checkLoginState(): Promise<User | null> {
   return new Promise((resolve) => {
     onAuthStateChanged(auth, (user) => {
       resolve(user ?? null);

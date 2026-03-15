@@ -1,12 +1,5 @@
 import { Flex, Typography } from "antd";
-import {
-  Asset,
-  CryptoContextType,
-  Coin,
-  CryptoContextProps,
-  Portfolio,
-  Crypto,
-} from "../types/types";
+import type { Coin } from "../types/types";
 
 interface CoinInfoProps {
   coin: Coin;

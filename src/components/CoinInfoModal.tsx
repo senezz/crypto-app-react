@@ -1,7 +1,13 @@
 import { Tag, Typography, Divider } from "antd";
 import CoinInfo from "./CoinInfo";
+import { Coin } from "../types/types";
 
-export default function CoinInfoModal({ coin }) {
+export default function CoinInfoModal({
+  coin,
+}: {
+  coin: Coin | null | undefined;
+}) {
+  if (!coin) return null;
   return (
     <>
       <CoinInfo coin={coin} withSymbol />

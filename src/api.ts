@@ -1,6 +1,11 @@
 import { cryptoPortfolio } from "./data";
+import type { Asset, Coin } from "./types/types";
 
-export async function fakeFetchCrypto() {
+export interface CoinApiResponse {
+  result: Coin[];
+}
+
+export async function fakeFetchCrypto(): Promise<CoinApiResponse> {
   const options = {
     method: "GET",
     headers: { "X-API-KEY": "b31jjX0fM+WeEqGcUTKHKRd3H5RwzYuaHzyhv9EgCM8=" },
@@ -11,7 +16,7 @@ export async function fakeFetchCrypto() {
     .catch((err) => console.error(err));
 }
 
-export function fetchPortfolio() {
+export function fetchPortfolio(): Promise<Asset[]> {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(cryptoPortfolio);
