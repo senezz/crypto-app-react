@@ -9,7 +9,7 @@ import LoginPage from "../LoginPage";
 export default function AppLayout() {
   const { loading, user } = useContext(CryptoContext);
 
-  if (loading) {
+  if (loading || user === false) {
     return <Spin fullscreen />;
   }
 

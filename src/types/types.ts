@@ -1,4 +1,5 @@
-import { ReactNode } from "react";
+import { ReactNode, Dispatch, SetStateAction } from "react";
+import type { User } from "firebase/auth";
 
 export interface Asset {
   amount: number;
@@ -18,13 +19,19 @@ export interface CryptoContextType {
   portfolio: Portfolio;
   addAsset: (newAsset: Asset) => void;
   sellAsset: (assetId: string, sellAmount: number) => void;
+  user: User | null | false;
+  setUser: Dispatch<SetStateAction<User | null | false>>;
 }
 
-export interface CryptoContextSimpleType {
-  loading: boolean;
-  crypto: Crypto;
-  portfolio: Portfolio;
+export interface SellFormValues {
+  amount: number;
 }
+
+// export interface CryptoContextSimpleType {
+//   loading: boolean;
+//   crypto: Crypto;
+//   portfolio: Portfolio;
+// }
 
 export interface Coin {
   id: string;
@@ -42,7 +49,7 @@ export interface Coin {
   priceChange1h: number;
   priceChange1d: number;
   priceChange1w: number;
-  contractAddress: number | null;
+  contractAddress: string | null;
 }
 
 export interface CryptoContextProps {

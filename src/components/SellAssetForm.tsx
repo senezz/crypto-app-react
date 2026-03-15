@@ -11,6 +11,13 @@ import {
 import { useState } from "react";
 import { useCrypto } from "../context/crypto-context";
 import CoinInfo from "./CoinInfo";
+import { Asset, SellFormValues } from "../types/types";
+
+interface SellAssetFormProps {
+  asset: Asset;
+  open: boolean;
+  onClose: () => void;
+}
 
 const validateMessages = {
   required: "${label} is required!",
@@ -18,22 +25,27 @@ const validateMessages = {
   number: { range: "${label} must be between ${min} and ${max}" },
 };
 
-export default function SellAssetForm({ asset, open, onClose }) {
+export default function SellAssetForm({
+  asset,
+  open,
+  onClose,
+}: SellAssetFormProps) {
   const [form] = Form.useForm();
   const { crypto, sellAsset } = useCrypto();
   const [total, setTotal] = useState(0);
   const coin = crypto.find((c) => c.id === asset.id);
+  if (!coin) return null;
 
   function minValueOfCoin() {
     return 0.0001;
   }
 
-  function onFinish(values) {
+  function onFinish(values: SellFormValues) {
     sellAsset(asset.id, values.amount);
     onClose();
   }
 
-  function handleAmountChange(amount) {
+  function handleAmountChange(amount: number | null) {
     if (!amount) {
       setTotal(0);
       return;
@@ -45,7 +57,7 @@ export default function SellAssetForm({ asset, open, onClose }) {
       message.error("No more than 4 decimal places allowed");
       return;
     }
-    setTotal(+(amount * coin.price).toFixed(2));
+    setTotal(+(amount * coin!.price).toFixed(2));
   }
 
   return (

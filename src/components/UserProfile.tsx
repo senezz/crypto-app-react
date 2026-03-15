@@ -5,6 +5,7 @@ import { logout } from "../auth";
 
 export function UserProfile() {
   const { user, setUser } = useCrypto();
+  if (!user || typeof user === "boolean") return null;
   const popoverContent = (
     <Button
       type="text"
@@ -16,6 +17,8 @@ export function UserProfile() {
       Logout
     </Button>
   );
+  console.log({ user });
+  console.log(user.photoURL);
 
   return (
     <Popover content={popoverContent} trigger="click" placement="bottomRight">

@@ -11,14 +11,7 @@ import {
 import { useState, useRef } from "react";
 import { useCrypto } from "../context/crypto-context";
 import CoinInfo from "./CoinInfo";
-import {
-  Asset,
-  CryptoContextType,
-  Coin,
-  CryptoContextProps,
-  Portfolio,
-  Crypto,
-} from "../types/types";
+import { Asset, Coin } from "../types/types";
 
 interface addAssetFormProps {
   onClose: () => void;
@@ -37,9 +30,9 @@ const validateMessages = {
 export default function AddAssetForm({ onClose }: addAssetFormProps) {
   const [form] = Form.useForm();
   const { crypto, addAsset } = useCrypto();
-  const [coin, setCoin] = useState<Coin | null | undefined>(null);
+  const [coin, setCoin] = useState<Coin | null>(null);
   const [submitted, setSubmitted] = useState(false);
-  const assetRef = useRef<Asset | undefined>(undefined);
+  const assetRef = useRef<Asset | null>(null);
 
   if (submitted) {
     let amount, price;
@@ -73,7 +66,9 @@ export default function AddAssetForm({ onClose }: addAssetFormProps) {
         style={{
           width: "100%",
         }}
-        onSelect={(v) => setCoin(crypto.find((c) => c.id === v))}
+        onSelect={(v: string) =>
+          setCoin(crypto.find((c) => c.id === v) ?? null)
+        }
         placeholder="Select coin"
         options={crypto.map((coin) => ({
           label: coin.name,
@@ -94,9 +89,9 @@ export default function AddAssetForm({ onClose }: addAssetFormProps) {
     );
   }
 
-  function onFinish(values: Asset) {
+  function onFinish(values: Asset): void {
     const newAsset: Asset = {
-      id: coin?.id ?? "",
+      id: coin!.id,
       amount: values.amount,
       price: values.price,
       date: values.date ?? new Date(),

@@ -10,6 +10,7 @@ import {
   doc,
   getDoc,
 } from "firebase/firestore";
+import type { Asset } from "./types/types";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -27,7 +28,7 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 
-export async function createPortfolio(portfolioId) {
+export async function createPortfolio(portfolioId: string): Promise<void> {
   try {
     await setDoc(doc(db, "portfolios", portfolioId), {
       assets: [],
@@ -38,7 +39,7 @@ export async function createPortfolio(portfolioId) {
   }
 }
 
-export async function getPortfolio(portfolioId) {
+export async function getPortfolio(portfolioId: string): Promise<Asset[]> {
   try {
     const portfolio = await getDoc(doc(db, "portfolios", portfolioId));
     if (portfolio.exists()) {
@@ -54,7 +55,10 @@ export async function getPortfolio(portfolioId) {
   return [];
 }
 
-export async function updatePortfolio(portfolioId, assets) {
+export async function updatePortfolio(
+  portfolioId: string,
+  assets: Asset[],
+): Promise<void> {
   try {
     const portfolio = doc(db, "portfolios", portfolioId);
     await updateDoc(portfolio, { assets });

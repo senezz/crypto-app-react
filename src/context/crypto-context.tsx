@@ -10,8 +10,9 @@ import {
   CryptoContextProps,
   Portfolio,
   Crypto,
-  CryptoContextSimpleType,
+  // CryptoContextSimpleType,
 } from "../types/types";
+import type { User } from "firebase/auth";
 
 const CryptoContext = createContext<CryptoContextType>({
   portfolio: [],
@@ -20,16 +21,19 @@ const CryptoContext = createContext<CryptoContextType>({
   user: false,
   addAsset: () => {},
   sellAsset: () => {},
+  setUser: () => {},
 });
 
 export function CryptoContextProvider({ children }: CryptoContextProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [crypto, setCrypto] = useState<Crypto>([]);
   const [portfolio, setPortfolio] = useState<Portfolio>([]);
-  const [user, setUser] = useState(false);
+  const [user, setUser] = useState<User | null | false>(false);
 
   function mapPortfolio(portfolio: Portfolio, result: Crypto): Portfolio {
-    updatePortfolio(user.uid, portfolio);
+    if (user && typeof user !== "boolean") {
+      updatePortfolio(user.uid, portfolio);
+    }
     if (portfolio) {
       return portfolio.map((asset) => {
         const coin = result.find((c) => c.id === asset.id);
@@ -43,10 +47,13 @@ export function CryptoContextProvider({ children }: CryptoContextProps) {
             name: coin.name,
           };
         } else {
-          return portfolio;
+          {
+            return asset;
+          }
         }
-      }) as Portfolio;
+      });
     }
+    return [];
   }
 
   useEffect(() => {
@@ -113,6 +120,8 @@ export function CryptoContextProvider({ children }: CryptoContextProps) {
     loading,
     crypto,
     portfolio: portfolio as Portfolio,
+    user,
+    setUser,
     addAsset,
     sellAsset,
   };

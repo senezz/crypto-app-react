@@ -1,9 +1,10 @@
-import { Button, Layout, Space, Avatar, Typography, Modal } from "antd";
+import { Button, Space, Avatar, Typography, Modal } from "antd";
 import * as Auth from "../auth";
 import { useCrypto } from "../context/crypto-context";
+import type { CSSProperties } from "react";
 
 const { Title, Text } = Typography;
-const backdropStyle = {
+const backdropStyle: CSSProperties = {
   position: "fixed",
   inset: 0,
   background:
