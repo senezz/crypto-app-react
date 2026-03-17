@@ -9,6 +9,8 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  query,
+  where,
 } from "firebase/firestore";
 import type { Asset } from "./types/types";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -62,6 +64,18 @@ export async function updatePortfolio(
   try {
     const portfolio = doc(db, "portfolios", portfolioId);
     await updateDoc(portfolio, { assets });
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+export async function getUserByCode(code: string) {
+  console.log(code);
+  try {
+    const snapshot = await getDocs(
+      query(collection(db, "tg-codes"), where("code", "==", Number(code))),
+    );
+    return snapshot.docs[0].data();
   } catch (e) {
     console.error(e);
   }

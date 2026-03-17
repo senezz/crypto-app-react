@@ -9,6 +9,7 @@ import {
 } from "firebase/auth";
 import type { User } from "firebase/auth";
 import type { Dispatch, SetStateAction } from "react";
+import { getUserByCode } from "./firebase";
 
 const provider = new GoogleAuthProvider();
 export const auth = getAuth();
@@ -52,8 +53,17 @@ export async function logout(
     .catch((error) => {});
 }
 
-export async function loginWithTelegram(): Promise<never> {
-  throw new Error("Telegram auth not implemented");
+const TelegramBotUrl = "";
+
+export function loginWithTelegram(): boolean {
+  window.open(TelegramBotUrl);
+  return true;
+  // throw new Error("Telegram auth not implemented");
+}
+
+export async function verifyTelegramCode(code: string): Promise<void> {
+  const user = await getUserByCode(code);
+  console.log(user);
 }
 
 export function checkLoginState(): Promise<User | null> {
