@@ -75,7 +75,10 @@ export default function AppContent() {
           }}
           color={totalProfitNum > 0 ? "#4c9b07" : "#b81927"}
         >
-          {Math.abs((totalProfitNum / totalPortfolioNum) * 100).toFixed(2)}%
+          {totalPortfolioNum
+            ? Math.abs((totalProfitNum / totalPortfolioNum) * 100).toFixed(2)
+            : "0.00"}
+          %
         </Tag>
       </Flex>
       <PortfolioChart />
