@@ -4,6 +4,7 @@ import TelegramCodeModal from "./TelegramCodeModal";
 import * as Auth from "../auth";
 import { getTelegramUsername, saveTelegramUsername } from "../firebase";
 import { useCrypto } from "../context/crypto-context";
+import telegramIcon from "../assets/telegram-svgrepo-com.svg";
 
 type VerifiedUser = { username: string; [key: string]: unknown };
 
@@ -43,7 +44,7 @@ export default function TelegramLoginButton() {
     <>
       <Button onClick={handleClick}>
         {linkedUsername ? `@${linkedUsername}` : "Link Telegram"}{" "}
-        <Avatar src="src/assets/telegram-svgrepo-com.svg" size={24} />
+        <Avatar src={telegramIcon} size={24} />
       </Button>
       <TelegramCodeModal
         open={modalOpen}

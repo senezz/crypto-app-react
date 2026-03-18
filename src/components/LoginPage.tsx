@@ -2,6 +2,7 @@ import { Button, Space, Avatar, Typography, Modal } from "antd";
 import * as Auth from "../auth";
 import { useCrypto } from "../context/crypto-context";
 import type { CSSProperties } from "react";
+import googleIcon from "../assets/google-logo-search-new-svgrepo-com.svg";
 
 const { Title, Text } = Typography;
 const backdropStyle: CSSProperties = {
@@ -48,11 +49,7 @@ export default function LoginPage() {
             onClick={() => Auth.login(setUser)}
             style={{ marginTop: 16 }}
           >
-            Sign in with Google{" "}
-            <Avatar
-              src="src/assets/google-logo-search-new-svgrepo-com.svg"
-              size={20}
-            />
+            Sign in with Google <Avatar src={googleIcon} size={20} />
           </Button>
         </Space>
       </Modal>
