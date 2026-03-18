@@ -1,23 +1,30 @@
 import { useState } from "react";
-import { Modal, Input, Typography, Space, message } from "antd";
-import * as Auth from "../auth";
+import { Modal, Input, Typography, Space, Button, Flex } from "antd";
+import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 
 const { Text } = Typography;
+
+type VerifiedUser = { username: string };
 
 interface TelegramCodeModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (code: string) => Promise<void>;
+  onVerify: (code: string) => Promise<VerifiedUser>;
+  onConfirm: (user: VerifiedUser) => void;
+  onReject: () => void;
 }
 
 export default function TelegramCodeModal({
   open,
   onClose,
-  onSubmit,
+  onVerify,
+  onConfirm,
+  onReject,
 }: TelegramCodeModalProps) {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [verifiedUser, setVerifiedUser] = useState<VerifiedUser | null>(null);
 
   const handleSubmit = async () => {
     const trimmed = code.trim();
@@ -25,17 +32,15 @@ export default function TelegramCodeModal({
       setError("Please enter the confirmation code.");
       return;
     }
-    console.log(trimmed);
-    onSubmit(trimmed);
-
     setError(null);
     setLoading(true);
     try {
-      await onSubmit(trimmed);
-      message.success("Telegram linked successfully!");
-      handleClose();
-    } catch (err: any) {
-      setError(err?.message ?? "Invalid code. Please try again.");
+      const user = await onVerify(trimmed);
+      setVerifiedUser(user);
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error ? err.message : "Invalid code. Please try again.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -44,7 +49,20 @@ export default function TelegramCodeModal({
   const handleClose = () => {
     setCode("");
     setError(null);
+    setVerifiedUser(null);
     onClose();
+  };
+
+  const handleConfirm = () => {
+    if (verifiedUser) {
+      onConfirm(verifiedUser);
+    }
+    handleClose();
+  };
+
+  const handleReject = () => {
+    onReject();
+    handleClose();
   };
 
   return (
@@ -52,48 +70,83 @@ export default function TelegramCodeModal({
       open={open}
       title={
         <Text style={{ color: "#4096ff", fontSize: 16 }}>
-          Enter Telegram Confirmation Code
+          {verifiedUser
+            ? "Confirm your Telegram account"
+            : "Enter Telegram Confirmation Code"}
         </Text>
       }
       onCancel={handleClose}
-      onOk={handleSubmit}
-      okText="Submit"
-      cancelText="Cancel"
-      confirmLoading={loading}
-      okButtonProps={{ disabled: !code.trim() }}
+      footer={null}
       centered
     >
-      <Space
-        orientation="vertical"
-        style={{ width: "100%", padding: "12px 0" }}
-      >
-        <Text type="secondary">
-          Open the Telegram bot and copy the confirmation code it sent you.
-        </Text>
-        <Input
-          size="large"
-          placeholder="e.g. 123456"
-          value={code}
-          onChange={(e) => {
-            setCode(e.target.value);
-            setError(null);
-          }}
-          onPressEnter={handleSubmit}
-          maxLength={32}
-          //   style={{
-          //     background: "#002a52",
-          //     borderColor: error ? "#ff4d4f" : "rgba(64, 150, 255, 0.3)",
-          //     color: "#fff",
-          //   }}
-          status={error ? "error" : undefined}
-          autoFocus
-        />
-        {error && (
-          <Text type="danger" style={{ fontSize: 13 }}>
-            {error}
+      {verifiedUser ? (
+        <Space
+          orientation="vertical"
+          style={{ width: "100%", padding: "12px 0" }}
+        >
+          <Text>
+            Found Telegram user:{" "}
+            <Text strong style={{ color: "#4096ff" }}>
+              @{verifiedUser.username}
+            </Text>
           </Text>
-        )}
-      </Space>
+          <Text type="secondary">Do you want to link this account?</Text>
+          <Flex gap={8} style={{ marginTop: 8 }}>
+            <Button
+              type="primary"
+              icon={<CheckOutlined />}
+              onClick={handleConfirm}
+              style={{ flex: 1 }}
+            >
+              Confirm
+            </Button>
+            <Button
+              danger
+              icon={<CloseOutlined />}
+              onClick={handleReject}
+              style={{ flex: 1 }}
+            >
+              Reject
+            </Button>
+          </Flex>
+        </Space>
+      ) : (
+        <Space
+          orientation="vertical"
+          style={{ width: "100%", padding: "12px 0" }}
+        >
+          <Text type="secondary">
+            Open the Telegram bot and copy the confirmation code it sent you.
+          </Text>
+          <Input
+            size="large"
+            placeholder="e.g. 123456"
+            value={code}
+            onChange={(e) => {
+              setCode(e.target.value);
+              setError(null);
+            }}
+            onPressEnter={handleSubmit}
+            maxLength={6}
+            status={error ? "error" : undefined}
+            autoFocus
+          />
+          {error && (
+            <Text type="danger" style={{ fontSize: 13 }}>
+              {error}
+            </Text>
+          )}
+          <Button
+            type="primary"
+            loading={loading}
+            disabled={!code.trim()}
+            onClick={handleSubmit}
+            style={{ width: "100%", marginTop: 4 }}
+          >
+            Submit
+          </Button>
+        </Space>
+      )}
     </Modal>
   );
 }

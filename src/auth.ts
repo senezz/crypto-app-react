@@ -53,17 +53,21 @@ export async function logout(
     .catch((error) => {});
 }
 
-const TelegramBotUrl = "";
+const TelegramBotUrl = "https://t.me/CryptoPortfolioNotificationsBot";
 
 export function loginWithTelegram(): boolean {
-  window.open(TelegramBotUrl);
+  window.open(TelegramBotUrl, "_blank");
   return true;
-  // throw new Error("Telegram auth not implemented");
 }
 
-export async function verifyTelegramCode(code: string): Promise<void> {
+export async function verifyTelegramCode(
+  code: string,
+): Promise<{ username: string }> {
   const user = await getUserByCode(code);
-  console.log(user);
+  if (!user) {
+    throw new Error("Invalid code. Please try again.");
+  }
+  return user as { username: string };
 }
 
 export function checkLoginState(): Promise<User | null> {
