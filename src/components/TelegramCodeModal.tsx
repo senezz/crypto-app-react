@@ -4,7 +4,7 @@ import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 
 const { Text } = Typography;
 
-type VerifiedUser = { username: string };
+type VerifiedUser = { username: string; userId: number };
 
 interface TelegramCodeModalProps {
   open: boolean;

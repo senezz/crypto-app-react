@@ -73,7 +73,7 @@ export async function getTelegramUsername(uid: string): Promise<string | null> {
   try {
     const snapshot = await getDoc(doc(db, "portfolios", uid));
     if (snapshot.exists()) {
-      return snapshot.data().telegramUsername ?? null;
+      return snapshot.data().telegramLink.username ?? null;
     }
   } catch (e) {
     console.error(e);
@@ -84,10 +84,15 @@ export async function getTelegramUsername(uid: string): Promise<string | null> {
 export async function saveTelegramUsername(
   uid: string,
   username: string,
+  chatId: number,
 ): Promise<void> {
   try {
     const ref = doc(db, "portfolios", uid);
-    await updateDoc(ref, { telegramUsername: username });
+    const telegramLink = {
+      username,
+      chatId,
+    };
+    await updateDoc(ref, { telegramLink });
   } catch (e) {
     console.error(e);
   }
