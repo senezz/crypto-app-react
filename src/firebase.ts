@@ -69,6 +69,30 @@ export async function updatePortfolio(
   }
 }
 
+export async function getTelegramUsername(uid: string): Promise<string | null> {
+  try {
+    const snapshot = await getDoc(doc(db, "portfolios", uid));
+    if (snapshot.exists()) {
+      return snapshot.data().telegramUsername ?? null;
+    }
+  } catch (e) {
+    console.error(e);
+  }
+  return null;
+}
+
+export async function saveTelegramUsername(
+  uid: string,
+  username: string,
+): Promise<void> {
+  try {
+    const ref = doc(db, "portfolios", uid);
+    await updateDoc(ref, { telegramUsername: username });
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 export async function getUserByCode(code: string) {
   console.log(code);
   try {
