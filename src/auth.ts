@@ -62,12 +62,12 @@ export function loginWithTelegram(): boolean {
 
 export async function verifyTelegramCode(
   code: string,
-): Promise<{ username: string }> {
+): Promise<{ username: string; userId: number }> {
   const user = await getUserByCode(code);
   if (!user) {
     throw new Error("Invalid code. Please try again.");
   }
-  return user as { username: string };
+  return user as { username: string; userId: number };
 }
 
 export function checkLoginState(): Promise<User | null> {

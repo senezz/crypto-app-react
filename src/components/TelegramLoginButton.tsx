@@ -6,7 +6,7 @@ import { getTelegramUsername, saveTelegramUsername } from "../firebase";
 import { useCrypto } from "../context/crypto-context";
 import telegramIcon from "../assets/telegram-svgrepo-com.svg";
 
-type VerifiedUser = { username: string; [key: string]: unknown };
+type VerifiedUser = { username: string; userId: number };
 
 export default function TelegramLoginButton() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -31,7 +31,11 @@ export default function TelegramLoginButton() {
   const handleConfirm = (verifiedUser: VerifiedUser) => {
     setLinkedUsername(verifiedUser.username);
     if (user && typeof user !== "boolean") {
-      saveTelegramUsername(user.uid, verifiedUser.username);
+      saveTelegramUsername(
+        user.uid,
+        verifiedUser.username,
+        verifiedUser.userId,
+      );
     }
     message.success(`Telegram @${verifiedUser.username} linked successfully!`);
   };
