@@ -35,7 +35,6 @@ export async function createPortfolio(portfolioId: string): Promise<void> {
     await setDoc(doc(db, "portfolios", portfolioId), {
       assets: [],
     });
-    // console.log("Document written with ID: ");
   } catch (e) {
     console.error("Error adding document: ", e);
   }
@@ -45,10 +44,8 @@ export async function getPortfolio(portfolioId: string): Promise<Asset[]> {
   try {
     const portfolio = await getDoc(doc(db, "portfolios", portfolioId));
     if (portfolio.exists()) {
-      console.log("Document data:", portfolio.data());
       return portfolio.data().assets;
     } else {
-      console.log("No such document!");
       await createPortfolio(portfolioId);
     }
   } catch (e) {

@@ -36,10 +36,6 @@ export default function SellAssetForm({
   const coin = crypto.find((c) => c.id === asset.id);
   if (!coin) return null;
 
-  function minValueOfCoin() {
-    return 0.0001;
-  }
-
   function onFinish(values: SellFormValues) {
     sellAsset(asset.id, values.amount);
     onClose();
@@ -105,7 +101,7 @@ export default function SellAssetForm({
             {
               required: true,
               type: "number",
-              min: minValueOfCoin(),
+              min: 0.0001,
               max: asset.amount,
               message: "You don't have enough coins",
             },

@@ -39,7 +39,7 @@ export default function AddAssetForm({ onClose }: addAssetFormProps) {
     const currentAsset = assetRef.current;
     if (currentAsset) {
       amount = (currentAsset as Asset).amount;
-      price = (currentAsset as Asset).amount;
+      price = (currentAsset as Asset).price;
     }
     let coinName;
     if (coin) {

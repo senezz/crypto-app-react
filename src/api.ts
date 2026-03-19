@@ -6,9 +6,10 @@ export interface CoinApiResponse {
 }
 
 export async function fakeFetchCrypto(): Promise<CoinApiResponse> {
+  const apiKey = import.meta.env.VITE_COINSTATS_KEY;
   const options = {
     method: "GET",
-    headers: { "X-API-KEY": "b31jjX0fM+WeEqGcUTKHKRd3H5RwzYuaHzyhv9EgCM8=" },
+    headers: { "X-API-KEY": apiKey },
   };
 
   return fetch("https://openapiv1.coinstats.app/coins", options)
