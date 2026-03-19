@@ -3,11 +3,12 @@ import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 import { useCrypto } from "../../context/crypto-context";
 import PortfolioChart from "../PortfolioChart";
 import AssetsTable from "../AssetsTable";
+import { Coin } from "../../types/types";
 
-interface Coin {
-  id: string;
-  price: number;
-}
+// interface Coin {
+//   id: string;
+//   price: number;
+// }
 
 type mapCoinPrice = {
   [key: string]: number;
