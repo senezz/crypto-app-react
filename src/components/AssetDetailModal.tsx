@@ -162,6 +162,10 @@ export default function AssetDetailModal({
                 plugins: {
                   legend: { display: false },
                   tooltip: {
+                    padding: 10,
+                    titleFont: { size: 12 },
+                    bodyFont: { size: 14, weight: "bold" },
+                    boxPadding: 4,
                     callbacks: {
                       title: (items) => {
                         const ts = points[items[0]?.dataIndex]?.[0];
