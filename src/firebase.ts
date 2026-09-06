@@ -1,5 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import { message } from "antd";
 import {
   getFirestore,
   collection,
@@ -32,13 +33,18 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 
+function reportFirestoreError(userMessage: string, e: unknown): void {
+  console.error(userMessage, e);
+  message.error(userMessage);
+}
+
 export async function createPortfolio(portfolioId: string): Promise<void> {
   try {
     await setDoc(doc(db, "portfolios", portfolioId), {
       assets: [],
     });
   } catch (e) {
-    console.error("Error adding document: ", e);
+    reportFirestoreError("Failed to create your portfolio", e);
   }
 }
 
@@ -51,7 +57,7 @@ export async function getPortfolio(portfolioId: string): Promise<Asset[]> {
       await createPortfolio(portfolioId);
     }
   } catch (e) {
-    console.error(e);
+    reportFirestoreError("Failed to load your portfolio", e);
   }
   return [];
 }
@@ -64,7 +70,7 @@ export async function updatePortfolio(
     const portfolio = doc(db, "portfolios", portfolioId);
     await updateDoc(portfolio, { assets });
   } catch (e) {
-    console.error(e);
+    reportFirestoreError("Failed to save portfolio changes", e);
   }
 }
 
@@ -72,10 +78,10 @@ export async function getTelegramUsername(uid: string): Promise<string | null> {
   try {
     const snapshot = await getDoc(doc(db, "portfolios", uid));
     if (snapshot.exists()) {
-      return snapshot.data().telegramLink.username ?? null;
+      return snapshot.data().telegramLink?.username ?? null;
     }
   } catch (e) {
-    console.error(e);
+    reportFirestoreError("Failed to load Telegram link status", e);
   }
   return null;
 }
@@ -93,7 +99,7 @@ export async function saveTelegramUsername(
     };
     await updateDoc(ref, { telegramLink });
   } catch (e) {
-    console.error(e);
+    reportFirestoreError("Failed to save Telegram link", e);
   }
 }
 
@@ -107,7 +113,7 @@ export async function addTransaction(
       transaction,
     );
   } catch (e) {
-    console.error(e);
+    reportFirestoreError("Failed to save transaction to history", e);
   }
 }
 
@@ -123,21 +129,16 @@ export async function getTransactions(uid: string): Promise<Transaction[]> {
       (d) => ({ id: d.id, ...d.data() }) as Transaction,
     );
   } catch (e) {
-    console.error(e);
+    reportFirestoreError("Failed to load transaction history", e);
   }
   return [];
 }
 
 export async function getUserByCode(code: string) {
-  console.log(code);
-  try {
-    const snapshot = await getDocs(
-      query(collection(db, "tg-codes"), where("code", "==", Number(code))),
-    );
-    return snapshot.docs[0].data();
-  } catch (e) {
-    console.error(e);
-  }
+  const snapshot = await getDocs(
+    query(collection(db, "tg-codes"), where("code", "==", Number(code))),
+  );
+  return snapshot.docs[0]?.data();
 }
 
 // export async function deleteFirstUser() {
