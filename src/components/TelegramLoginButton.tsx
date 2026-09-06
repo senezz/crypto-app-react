@@ -23,11 +23,6 @@ export default function TelegramLoginButton() {
     }
   }, [user]);
 
-  const handleClick = () => {
-    Auth.loginWithTelegram();
-    setModalOpen(true);
-  };
-
   const handleConfirm = (verifiedUser: VerifiedUser) => {
     setLinkedUsername(verifiedUser.username);
     if (user && typeof user !== "boolean") {
@@ -49,13 +44,14 @@ export default function TelegramLoginButton() {
       <Avatar
         size={36}
         src={telegramIcon}
-        onClick={handleClick}
+        onClick={() => setModalOpen(true)}
         style={{ cursor: "pointer" }}
         alt={linkedUsername ? `@${linkedUsername}` : "Link Telegram"}
       />
       <TelegramCodeModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
+        onOpenBot={() => Auth.loginWithTelegram()}
         onVerify={(code) => Auth.verifyTelegramCode(code)}
         onConfirm={handleConfirm}
         onReject={handleReject}

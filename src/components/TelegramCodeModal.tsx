@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { Modal, Input, Typography, Space, Button, Flex } from "antd";
+import { Modal, Input, Typography, Flex, Button } from "antd";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 type VerifiedUser = { username: string; userId: number };
 
 interface TelegramCodeModalProps {
   open: boolean;
   onClose: () => void;
+  onOpenBot: () => void;
   onVerify: (code: string) => Promise<VerifiedUser>;
   onConfirm: (user: VerifiedUser) => void;
   onReject: () => void;
@@ -17,6 +18,7 @@ interface TelegramCodeModalProps {
 export default function TelegramCodeModal({
   open,
   onClose,
+  onOpenBot,
   onVerify,
   onConfirm,
   onReject,
@@ -66,32 +68,18 @@ export default function TelegramCodeModal({
   };
 
   return (
-    <Modal
-      open={open}
-      title={
-        <Text style={{ color: "#4096ff", fontSize: 16 }}>
-          {verifiedUser
-            ? "Confirm your Telegram account"
-            : "Enter Telegram Confirmation Code"}
-        </Text>
-      }
-      onCancel={handleClose}
-      footer={null}
-      centered
-    >
+    <Modal open={open} onCancel={handleClose} footer={null} title={null}>
+      <Title level={5} style={{ margin: 0 }}>
+        Connect Telegram
+      </Title>
+
       {verifiedUser ? (
-        <Space
-          orientation="vertical"
-          style={{ width: "100%", padding: "12px 0" }}
-        >
+        <Flex vertical gap={12} style={{ marginTop: 12 }}>
           <Text>
-            Found Telegram user:{" "}
-            <Text strong style={{ color: "#4096ff" }}>
-              @{verifiedUser.username}
-            </Text>
+            Found Telegram user{" "}
+            <Text strong>@{verifiedUser.username}</Text>. Link this account?
           </Text>
-          <Text type="secondary">Do you want to link this account?</Text>
-          <Flex gap={8} style={{ marginTop: 8 }}>
+          <Flex gap={8}>
             <Button
               type="primary"
               icon={<CheckOutlined />}
@@ -109,43 +97,50 @@ export default function TelegramCodeModal({
               Reject
             </Button>
           </Flex>
-        </Space>
+        </Flex>
       ) : (
-        <Space
-          orientation="vertical"
-          style={{ width: "100%", padding: "12px 0" }}
-        >
+        <Flex vertical gap={12} style={{ marginTop: 4 }}>
           <Text type="secondary">
-            Open the Telegram bot and copy the confirmation code it sent you.
+            Open the bot, send /start, then enter the code it gives you.
           </Text>
-          <Input
-            size="large"
-            placeholder="e.g. 123456"
-            value={code}
-            onChange={(e) => {
-              setCode(e.target.value);
-              setError(null);
-            }}
-            onPressEnter={handleSubmit}
-            maxLength={6}
-            status={error ? "error" : undefined}
-            autoFocus
-          />
-          {error && (
-            <Text type="danger" style={{ fontSize: 13 }}>
-              {error}
+
+          <Button block onClick={onOpenBot}>
+            Open bot ↗
+          </Button>
+
+          <Flex vertical gap={4}>
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              Verification code
             </Text>
-          )}
+            <Input
+              placeholder="123456"
+              value={code}
+              onChange={(e) => {
+                setCode(e.target.value);
+                setError(null);
+              }}
+              onPressEnter={handleSubmit}
+              maxLength={6}
+              status={error ? "error" : undefined}
+              autoFocus
+            />
+            {error && (
+              <Text type="danger" style={{ fontSize: 13 }}>
+                {error}
+              </Text>
+            )}
+          </Flex>
+
           <Button
             type="primary"
+            block
             loading={loading}
             disabled={!code.trim()}
             onClick={handleSubmit}
-            style={{ width: "100%", marginTop: 4 }}
           >
-            Submit
+            Verify
           </Button>
-        </Space>
+        </Flex>
       )}
     </Modal>
   );
