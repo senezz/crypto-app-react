@@ -1,58 +1,45 @@
-import { Button, Space, Avatar, Typography, Modal } from "antd";
+import { Button, Card, Flex, Typography } from "antd";
 import * as Auth from "../auth";
 import { useCrypto } from "../context/crypto-context";
 import type { CSSProperties } from "react";
 import googleIcon from "../assets/google-logo-search-new-svgrepo-com.svg";
 
 const { Title, Text } = Typography;
-const backdropStyle: CSSProperties = {
-  position: "fixed",
-  inset: 0,
-  background:
-    "radial-gradient(ellipse at 30% 40%, #003a6b 0%, #001529 50%, #000d1a 100%)",
-  zIndex: 0,
+
+const pageStyle: CSSProperties = {
+  minHeight: "100vh",
+  width: "100%",
 };
 
-const modalStyles = {
-  mask: { background: "transparent" },
-  content: {
-    background: "#001f3f",
-    border: "1px solid rgba(64, 150, 255, 0.2)",
-    boxShadow: "0 8px 48px rgba(0, 0, 0, 0.6)",
-  },
+const cardStyle: CSSProperties = {
+  width: 320,
 };
 
 export default function LoginPage() {
   const { setUser } = useCrypto();
   return (
-    <>
-      <div style={backdropStyle} />
-      <Modal
-        open
-        centered
-        footer={null}
-        closable={false}
-        getContainer={false}
-        styles={modalStyles}
-      >
-        <Space
-          orientation="vertical"
-          align="center"
-          style={{ width: "100%", padding: "16px 0" }}
-        >
-          <Title level={3} style={{ margin: 0, color: "#4096ff" }}>
-            Welcome to Crypto Portfolio
+    <Flex justify="center" align="center" style={pageStyle}>
+      <Card style={cardStyle} styles={{ body: { padding: 24 } }}>
+        <Flex vertical gap={4} style={{ marginBottom: 20 }}>
+          <Title level={4} style={{ margin: 0 }}>
+            Crypto manager
           </Title>
-          <Text type="secondary">Sign in to track your assets</Text>
-          <Button
-            block
-            onClick={() => Auth.login(setUser)}
-            style={{ marginTop: 16 }}
-          >
-            Sign in with Google <Avatar src={googleIcon} size={20} />
-          </Button>
-        </Space>
-      </Modal>
-    </>
+          <Text type="secondary">Track your portfolio in one place.</Text>
+        </Flex>
+        <Button
+          block
+          onClick={() => Auth.login(setUser)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+          }}
+        >
+          <img src={googleIcon} alt="" width={16} height={16} />
+          Continue with Google
+        </Button>
+      </Card>
+    </Flex>
   );
 }
