@@ -1,5 +1,6 @@
 import { Tag, Typography, Divider } from "antd";
 import CoinInfo from "./CoinInfo";
+import CoinPriceChart from "./CoinPriceChart";
 import { Coin } from "../types/types";
 
 export default function CoinInfoModal({
@@ -11,6 +12,7 @@ export default function CoinInfoModal({
   return (
     <>
       <CoinInfo coin={coin} withSymbol />
+      <CoinPriceChart coinId={coin.id} />
       <Divider />
       <Typography.Paragraph>
         <Typography.Text strong>1 hour: </Typography.Text>

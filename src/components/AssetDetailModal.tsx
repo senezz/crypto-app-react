@@ -12,7 +12,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { useCrypto } from "../context/crypto-context";
-import { useCoinChart } from "../hooks/useCoinChart";
+import { useCoinChartCache } from "../hooks/useCoinChartCache";
 import { findNearestChartPoint } from "../utils";
 import SellAssetForm from "./SellAssetForm";
 import AddAssetForm from "./AddAssetForm";
@@ -62,7 +62,7 @@ export default function AssetDetailModal({
   const [sellOpen, setSellOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const coin = crypto.find((c) => c.id === asset.id);
-  const { points, loading } = useCoinChart(asset.id);
+  const { points, loading } = useCoinChartCache(asset.id);
 
   const assetTransactions = useMemo(
     () => transactions.filter((t) => t.coinId === asset.id),
