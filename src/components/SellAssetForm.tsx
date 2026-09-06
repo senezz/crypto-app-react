@@ -1,17 +1,7 @@
-import {
-  Typography,
-  Flex,
-  Divider,
-  Form,
-  InputNumber,
-  Button,
-  Modal,
-  message,
-} from "antd";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { Button, Flex, InputNumber, Modal, Typography } from "antd";
 import { useCrypto } from "../context/crypto-context";
-import CoinInfo from "./CoinInfo";
-import { Asset, SellFormValues } from "../types/types";
+import { Asset } from "../types/types";
 
 interface SellAssetFormProps {
   asset: Asset;
@@ -19,133 +9,122 @@ interface SellAssetFormProps {
   onClose: () => void;
 }
 
-const validateMessages = {
-  required: "${label} is required!",
-  types: { number: "${label} in not valid number" },
-  number: { range: "${label} must be between ${min} and ${max}" },
-};
-
 export default function SellAssetForm({
   asset,
   open,
   onClose,
 }: SellAssetFormProps) {
-  const [form] = Form.useForm();
   const { crypto, sellAsset } = useCrypto();
-  const [total, setTotal] = useState(0);
+  const [amount, setAmount] = useState<number | null>(null);
   const coin = crypto.find((c) => c.id === asset.id);
+
+  const error = useMemo(() => {
+    if (amount === null) return null;
+    if (amount <= 0) return "Enter an amount greater than 0";
+    if (amount > asset.amount) return "You don't have enough coins";
+    return null;
+  }, [amount, asset.amount]);
+
   if (!coin) return null;
 
-  function onFinish(values: SellFormValues) {
-    sellAsset(asset.id, values.amount);
+  const willReceive = amount && !error ? amount * coin.price : 0;
+
+  function handleClose() {
+    setAmount(null);
     onClose();
   }
 
-  function handleAmountChange(amount: number | null) {
-    if (!amount) {
-      setTotal(0);
-      return;
-    }
-    const decimals = amount.toString().split(".")[1];
-    if (decimals && decimals.length > 4) {
-      form.resetFields(["amount"]);
-      setTotal(0);
-      message.error("No more than 4 decimal places allowed");
-      return;
-    }
-    setTotal(+(amount * coin!.price).toFixed(2));
+  function handleSell() {
+    if (!amount || error) return;
+    sellAsset(asset.id, amount);
+    handleClose();
   }
 
   return (
     <Modal
       open={open}
-      onCancel={onClose}
+      onCancel={handleClose}
       footer={null}
-      title="Confirm Sell Asset"
+      title="Confirm sell"
       destroyOnHidden
     >
-      <Form
-        form={form}
-        name="basic"
-        labelCol={{
-          span: 4,
-        }}
-        wrapperCol={{
-          span: 10,
-        }}
+      <Flex align="center" gap={10} style={{ marginBottom: 16 }}>
+        {coin.icon && <img src={coin.icon} alt={coin.name} width={24} />}
+        <Typography.Text strong>
+          {coin.name} ({coin.symbol?.toUpperCase()})
+        </Typography.Text>
+      </Flex>
+
+      <Flex
+        vertical
+        gap={8}
         style={{
-          maxWidth: 600,
+          padding: 12,
+          border: "1px solid #2a2a2a",
+          borderRadius: 8,
+          marginBottom: 16,
         }}
-        onFinish={onFinish}
-        validateMessages={validateMessages}
       >
-        <CoinInfo coin={coin} withSymbol />
-        <Divider />
-        <Typography.Paragraph>
-          You currently hold{" "}
-          <Typography.Text strong>
-            {asset.amount.toFixed(4)} {asset.name}
-          </Typography.Text>{" "}
-          at the current price of{" "}
-          <Typography.Text strong>${coin.price.toFixed(2)}</Typography.Text> per
-          coin.
+        <Flex justify="space-between">
+          <Typography.Text type="secondary">You hold</Typography.Text>
+          <Typography.Text>{asset.amount.toFixed(4)}</Typography.Text>
+        </Flex>
+        <Flex justify="space-between">
+          <Typography.Text type="secondary">Avg buy price</Typography.Text>
+          <Typography.Text type="secondary">
+            ${asset.price.toFixed(2)}
+          </Typography.Text>
+        </Flex>
+        <Flex justify="space-between">
+          <Typography.Text type="secondary">Current price</Typography.Text>
+          <Typography.Text strong style={{ color: "#3ecf8e" }}>
+            ${coin.price.toFixed(2)}
+          </Typography.Text>
+        </Flex>
+      </Flex>
+
+      <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+        Amount to sell
+      </Typography.Text>
+      <InputNumber
+        placeholder="0.00"
+        value={amount}
+        onChange={setAmount}
+        style={{ width: "100%", marginTop: 4 }}
+        min={0}
+        max={asset.amount}
+        step={0.0001}
+        status={error ? "error" : undefined}
+      />
+      {error && (
+        <Typography.Text type="danger" style={{ fontSize: 13 }}>
+          {error}
+        </Typography.Text>
+      )}
+
+      {willReceive > 0 && (
+        <Typography.Paragraph style={{ marginTop: 12, marginBottom: 0 }}>
+          You will receive{" "}
+          <Typography.Text strong style={{ color: "#3ecf8e" }}>
+            ${willReceive.toFixed(2)}
+          </Typography.Text>
         </Typography.Paragraph>
-        <Typography.Paragraph>
-          How much would you like to sell?
-        </Typography.Paragraph>
-        <Divider />
-        <Form.Item
-          label="Amount"
-          name="amount"
-          rules={[
-            {
-              required: true,
-              type: "number",
-              min: 0.0001,
-              max: asset.amount,
-              message: "You don't have enough coins",
-            },
-            {
-              validator(_, amount) {
-                if (amount && amount.toString().split(".")[1]?.length > 4) {
-                  return Promise.reject(
-                    "No more than 4 decimal places allowed",
-                  );
-                }
-                return Promise.resolve();
-              },
-            },
-          ]}
+      )}
+
+      <Flex gap={8} style={{ marginTop: 20 }}>
+        <Button block onClick={handleClose}>
+          Cancel
+        </Button>
+        <Button
+          type="primary"
+          danger
+          block
+          disabled={!amount || !!error}
+          onClick={handleSell}
         >
-          <InputNumber
-            placeholder="Enter coin amount"
-            onChange={handleAmountChange}
-            style={{ width: "100%" }}
-            min={0}
-            max={asset.amount}
-            step={0.0001}
-          />
-        </Form.Item>
-        {total > 0 && (
-          <>
-            <Typography.Paragraph>
-              You will receive{" "}
-              <Typography.Text strong type="success">
-                ${total}
-              </Typography.Text>
-            </Typography.Paragraph>
-            <Divider />
-          </>
-        )}
-        <Form.Item wrapperCol={{ span: 24 }}>
-          <Flex gap="small" justify="flex-end" style={{ width: "100%" }}>
-            <Button onClick={onClose}>Cancel</Button>
-            <Button type="primary" danger htmlType="submit">
-              Sell
-            </Button>
-          </Flex>
-        </Form.Item>
-      </Form>
+          Sell
+        </Button>
+      </Flex>
     </Modal>
   );
 }
