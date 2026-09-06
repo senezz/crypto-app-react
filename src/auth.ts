@@ -10,7 +10,7 @@ import {
 import type { User } from "firebase/auth";
 import type { Dispatch, SetStateAction } from "react";
 import { message } from "antd";
-import { getUserByCode } from "./firebase";
+import { verifyCode } from "./firebase";
 
 function reportAuthError(userMessage: string, e: unknown): void {
   console.error(userMessage, e);
@@ -54,11 +54,15 @@ export function loginWithTelegram(): boolean {
 export async function verifyTelegramCode(
   code: string,
 ): Promise<{ username: string; userId: number }> {
-  const user = await getUserByCode(code);
-  if (!user) {
+  try {
+    return await verifyCode(code);
+  } catch (e) {
+    const err = e as { code?: string };
+    if (err.code === "functions/deadline-exceeded") {
+      throw new Error("Code has expired. Please request a new one.");
+    }
     throw new Error("Invalid code. Please try again.");
   }
-  return user as { username: string; userId: number };
 }
 
 export function checkLoginState(): Promise<User | null> {
