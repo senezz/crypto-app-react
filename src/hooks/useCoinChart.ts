@@ -24,18 +24,37 @@ export function useCoinChart(coinId: string | null) {
     setLoading(true);
 
     const apiKey = import.meta.env.VITE_COINSTATS_KEY;
-    fetch(`https://openapiv1.coinstats.app/coins/${coinId}/charts?period=1w`, {
+    const url = `https://openapiv1.coinstats.app/coins/${coinId}/charts?period=1w`;
+
+    fetch(url, {
       method: "GET",
       headers: { "X-API-KEY": apiKey },
     })
-      .then((res) => res.json())
-      .then((data: { result: ChartPoint[] }) => {
+      .then(async (res) => {
+        const rawText = await res.text();
+        console.log("[useCoinChart] request", { coinId, url });
+        console.log("[useCoinChart] response status", res.status);
+        console.log("[useCoinChart] response body", rawText);
+
+        if (!res.ok) {
+          throw new Error(
+            `CoinStats charts request failed: ${res.status} ${rawText}`,
+          );
+        }
+
+        const data: unknown = JSON.parse(rawText);
+        // CoinStats returns the charts payload as a bare array of
+        // [timestamp, price, ...] tuples, not { result: [...] } as
+        // other CoinStats endpoints do - handle both just in case.
+        const result: ChartPoint[] = Array.isArray(data)
+          ? (data as ChartPoint[])
+          : ((data as { result?: ChartPoint[] }).result ?? []);
+
         if (cancelled) return;
-        const result = data.result ?? [];
         chartCache.set(coinId, result);
         setPoints(result);
       })
-      .catch((err) => console.error(err))
+      .catch((err) => console.error("[useCoinChart] failed", err))
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
