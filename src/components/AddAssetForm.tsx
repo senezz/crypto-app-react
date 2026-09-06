@@ -1,16 +1,15 @@
 import {
   Select,
   Space,
-  Divider,
+  Flex,
   Form,
   InputNumber,
   Button,
   DatePicker,
-  Result,
+  Typography,
 } from "antd";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useCrypto } from "../context/crypto-context";
-import CoinInfo from "./CoinInfo";
 import { Asset, Coin } from "../types/types";
 
 interface addAssetFormProps {
@@ -37,147 +36,119 @@ export default function AddAssetForm({
   const [coin, setCoin] = useState<Coin | null>(
     () => crypto.find((c) => c.id === defaultCoinId) ?? null,
   );
-  const [submitted, setSubmitted] = useState(false);
-  const assetRef = useRef<Asset | null>(null);
 
-  if (submitted) {
-    let amount, price;
-    const currentAsset = assetRef.current;
-    if (currentAsset) {
-      amount = (currentAsset as Asset).amount;
-      price = (currentAsset as Asset).price;
-    }
-    let coinName;
-    if (coin) {
-      coinName = coin.name;
-    }
-
-    return (
-      <Result
-        status="success"
-        title="New Asset Added"
-        subTitle={`Added ${amount} of ${coinName} by price ${price}`}
-        extra={[
-          <Button type="primary" key="console" onClick={onClose}>
-            Close
-          </Button>,
-        ]}
-      />
-    );
+  function handleSelectCoin(value: string) {
+    const selected = crypto.find((c) => c.id === value) ?? null;
+    setCoin(selected);
+    form.setFieldsValue({ price: selected ? +selected.price.toFixed(2) : undefined });
   }
 
-  if (!coin) {
-    return (
-      <Select
-        style={{
-          width: "100%",
-        }}
-        onSelect={(v: string) =>
-          setCoin(crypto.find((c) => c.id === v) ?? null)
-        }
-        placeholder="Select coin"
-        options={crypto.map((coin) => ({
-          label: coin.name,
-          value: coin.id,
-          icon: coin.icon,
-        }))}
-        optionRender={(option) => (
-          <Space>
-            <img
-              style={{ width: 20 }}
-              src={option.data.icon}
-              alt={option.data.label}
-            />{" "}
-            {option.data.label}
-          </Space>
-        )}
-      />
-    );
-  }
-
-  function onFinish(values: Asset): void {
+  function onFinish(values: { amount: number; price: number; date?: unknown }): void {
+    if (!coin) return;
     const newAsset: Asset = {
-      id: coin!.id,
+      id: coin.id,
       amount: values.amount,
       price: values.price,
-      date: values.date ?? new Date(),
+      date: values.date ? new Date(values.date as string) : new Date(),
     };
-    assetRef.current = newAsset;
-    setSubmitted(true);
     addAsset(newAsset);
-  }
-
-  function handleAmountChange(value: number | null) {
-    const price = form.getFieldValue("price");
-    form.setFieldsValue({
-      total: ((value ?? 0) * +price).toFixed(2),
-    });
-  }
-
-  function handlePriceChange(value: number | null) {
-    const amount = form.getFieldValue("amount");
-    form.setFieldsValue({
-      total: (+amount * (value ?? 0)).toFixed(2),
-    });
+    onClose();
   }
 
   return (
     <Form
       form={form}
-      name="basic"
-      labelCol={{
-        span: 4,
-      }}
-      wrapperCol={{
-        span: 10,
-      }}
-      style={{
-        maxWidth: 600,
-      }}
-      initialValues={{
-        price: +coin.price.toFixed(2),
-      }}
+      layout="vertical"
       onFinish={onFinish}
       validateMessages={validateMessages}
+      initialValues={{
+        coinId: coin?.id,
+        price: coin ? +coin.price.toFixed(2) : undefined,
+      }}
     >
-      <CoinInfo coin={coin} />
-      <Divider />
-
       <Form.Item
-        label="Amount"
-        name="amount"
-        rules={[
-          {
-            required: true,
-            type: "number",
-            min: 0,
-          },
-        ]}
+        label="Coin"
+        name="coinId"
+        rules={[{ required: true, message: "Please select a coin" }]}
       >
-        <InputNumber
-          placeholder="Enter coin amount"
-          onChange={handleAmountChange}
-          style={{ width: "100%" }}
+        <Select
+          placeholder="Select coin"
+          onSelect={handleSelectCoin}
+          options={crypto.map((c) => ({
+            label: c.name,
+            value: c.id,
+            icon: c.icon,
+          }))}
+          optionRender={(option) => (
+            <Space>
+              <img
+                style={{ width: 20 }}
+                src={option.data.icon}
+                alt={option.data.label}
+              />
+              {option.data.label}
+            </Space>
+          )}
+          labelRender={(option) => {
+            const selected = crypto.find((c) => c.id === option.value);
+            return (
+              <Space>
+                {selected?.icon && (
+                  <img style={{ width: 20 }} src={selected.icon} alt="" />
+                )}
+                {option.label}
+              </Space>
+            );
+          }}
         />
       </Form.Item>
 
-      <Form.Item label="Price" name="price">
-        <InputNumber onChange={handlePriceChange} style={{ width: "100%" }} />
+      <Flex gap={12}>
+        <Form.Item
+          label="Amount"
+          name="amount"
+          style={{ flex: 1 }}
+          rules={[{ required: true, type: "number", min: 0 }]}
+        >
+          <InputNumber
+            placeholder="0.00"
+            style={{ width: "100%" }}
+            min={0}
+          />
+        </Form.Item>
+
+        <Form.Item
+          label="Price paid"
+          name="price"
+          style={{ flex: 1 }}
+          rules={[{ required: true, type: "number", min: 0 }]}
+        >
+          <InputNumber
+            placeholder="$0.00"
+            style={{ width: "100%" }}
+            min={0}
+          />
+        </Form.Item>
+      </Flex>
+
+      <Form.Item label="Purchase date" name="date">
+        <DatePicker style={{ width: "100%" }} />
       </Form.Item>
 
-      <Form.Item label="Date & Time" name="date">
-        <DatePicker showTime />
-      </Form.Item>
+      {!coin && (
+        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+          Select a coin to continue
+        </Typography.Text>
+      )}
 
-      <Form.Item label="Total" name="total">
-        <InputNumber disabled style={{ width: "100%" }} />
-      </Form.Item>
-
-      <Form.Item>
-        <Button type="primary" htmlType="submit">
-          Add Asset
+      <Flex gap={8} style={{ marginTop: 8 }}>
+        <Button block onClick={onClose}>
+          Cancel
         </Button>
-      </Form.Item>
+        <Button type="primary" block htmlType="submit">
+          Add asset
+        </Button>
+      </Flex>
     </Form>
   );
 }
