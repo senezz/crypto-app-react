@@ -130,7 +130,7 @@ export function CryptoContextProvider({ children }: CryptoContextProps) {
     });
   }
 
-  function sellAsset(assetId: string, sellAmount: number) {
+  function sellAsset(assetId: string, sellAmount: number, sellDate?: Date) {
     const coin = crypto.find((c) => c.id === assetId);
     const asset = portfolio.find((a) => a.id === assetId);
     const price = coin?.price ?? asset?.price ?? 0;
@@ -142,7 +142,7 @@ export function CryptoContextProvider({ children }: CryptoContextProps) {
       amount: sellAmount,
       price,
       total: sellAmount * price,
-      date: new Date().toISOString(),
+      date: (sellDate ?? new Date()).toISOString(),
     });
 
     setPortfolio((prev) =>

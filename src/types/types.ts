@@ -19,7 +19,7 @@ export interface CryptoContextType {
   portfolio: Portfolio;
   transactions: Transaction[];
   addAsset: (newAsset: Asset) => void;
-  sellAsset: (assetId: string, sellAmount: number) => void;
+  sellAsset: (assetId: string, sellAmount: number, sellDate?: Date) => void;
   user: User | null | false;
   setUser: Dispatch<SetStateAction<User | null | false>>;
 }

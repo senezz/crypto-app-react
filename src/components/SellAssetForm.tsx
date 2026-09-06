@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { Button, Flex, InputNumber, Modal, Typography } from "antd";
+import { Button, DatePicker, Flex, InputNumber, Modal, Typography } from "antd";
+import type { Dayjs } from "dayjs";
 import { useCrypto } from "../context/crypto-context";
 import { Asset } from "../types/types";
 
@@ -16,6 +17,7 @@ export default function SellAssetForm({
 }: SellAssetFormProps) {
   const { crypto, sellAsset } = useCrypto();
   const [amount, setAmount] = useState<number | null>(null);
+  const [date, setDate] = useState<Dayjs | null>(null);
   const coin = crypto.find((c) => c.id === asset.id);
 
   const error = useMemo(() => {
@@ -31,12 +33,13 @@ export default function SellAssetForm({
 
   function handleClose() {
     setAmount(null);
+    setDate(null);
     onClose();
   }
 
   function handleSell() {
     if (!amount || error) return;
-    sellAsset(asset.id, amount);
+    sellAsset(asset.id, amount, date?.toDate());
     handleClose();
   }
 
@@ -101,6 +104,19 @@ export default function SellAssetForm({
           {error}
         </Typography.Text>
       )}
+
+      <Typography.Text
+        type="secondary"
+        style={{ fontSize: 12, display: "block", marginTop: 12 }}
+      >
+        Sell date
+      </Typography.Text>
+      <DatePicker
+        value={date}
+        onChange={setDate}
+        placeholder="Today"
+        style={{ width: "100%", marginTop: 4 }}
+      />
 
       {willReceive > 0 && (
         <Typography.Paragraph style={{ marginTop: 12, marginBottom: 0 }}>
