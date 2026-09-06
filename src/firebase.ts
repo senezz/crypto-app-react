@@ -1,4 +1,3 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { message } from "antd";
 import {
@@ -8,7 +7,6 @@ import {
   addDoc,
   getDocs,
   updateDoc,
-  deleteDoc,
   doc,
   getDoc,
   query,
@@ -16,10 +14,7 @@ import {
   orderBy,
 } from "firebase/firestore";
 import type { Asset, Transaction } from "./types/types";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBxQF7sueKooLMk25WA9Gw9iq576UvF5YI",
   authDomain: "crypto-react-app-1a792.firebaseapp.com",
@@ -29,7 +24,6 @@ const firebaseConfig = {
   appId: "1:1051641990765:web:aef8af50ed274dc8a5b964",
 };
 
-// Initialize Firebase
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 
@@ -140,8 +134,3 @@ export async function getUserByCode(code: string) {
   );
   return snapshot.docs[0]?.data();
 }
-
-// export async function deleteFirstUser() {
-//   const firstUser = await getFirstUser();
-//   await deleteDoc(firstUser);
-// }

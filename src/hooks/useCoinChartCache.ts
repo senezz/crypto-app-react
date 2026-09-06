@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 import type { ChartPoint } from "../utils";
 
-// Module-level cache (not component state) so every place that shows a
-// coin chart - the asset-detail modal and the coin-info modal - shares
-// one cache instead of each hitting CoinStats' rate-limited free tier
-// independently for the same coin.
 const CACHE_TTL_MS = 3 * 60 * 1000;
 
 interface CacheEntry {
@@ -30,14 +26,10 @@ export function useCoinChartCache(coinId: string | null) {
     const cached = chartCache.get(coinId);
     if (cached) {
       setPoints(cached.points);
-      // Fast repeat clicks on the same coin never refetch; a fresh
-      // entry is used as-is with no request at all.
       if (isFresh(cached)) return;
     }
 
     let cancelled = false;
-    // Only show a loading state on a real cache miss - a stale-but-
-    // present entry keeps rendering while it refreshes in the background.
     if (!cached) setLoading(true);
 
     const apiKey = import.meta.env.VITE_COINSTATS_KEY;
@@ -49,9 +41,6 @@ export function useCoinChartCache(coinId: string | null) {
     })
       .then(async (res) => {
         const rawText = await res.text();
-        console.log("[useCoinChartCache] request", { coinId, url });
-        console.log("[useCoinChartCache] response status", res.status);
-        console.log("[useCoinChartCache] response body", rawText);
 
         if (!res.ok) {
           throw new Error(
@@ -60,9 +49,6 @@ export function useCoinChartCache(coinId: string | null) {
         }
 
         const data: unknown = JSON.parse(rawText);
-        // CoinStats returns the charts payload as a bare array of
-        // [timestamp, price, ...] tuples, not { result: [...] } as
-        // other CoinStats endpoints do - handle both just in case.
         const result: ChartPoint[] = Array.isArray(data)
           ? (data as ChartPoint[])
           : ((data as { result?: ChartPoint[] }).result ?? []);

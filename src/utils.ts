@@ -8,11 +8,6 @@ export function capitalize(str: string): string {
 
 export type ChartPoint = [timestamp: number, price: number];
 
-/**
- * CoinStats chart points carry unix-seconds timestamps that don't line up
- * exactly with a transaction's saved date, so the closest available point
- * is used to place the buy/sell marker on the chart.
- */
 export function findNearestChartPoint(
   transactionDate: Date,
   chartPoints: ChartPoint[],

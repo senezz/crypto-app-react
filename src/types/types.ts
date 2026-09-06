@@ -28,12 +28,6 @@ export interface SellFormValues {
   amount: number;
 }
 
-// export interface CryptoContextSimpleType {
-//   loading: boolean;
-//   crypto: Crypto;
-//   portfolio: Portfolio;
-// }
-
 export interface Coin {
   id: string;
   icon: string;

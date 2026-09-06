@@ -16,7 +16,6 @@ import {
   Portfolio,
   Crypto,
   Transaction,
-  // CryptoContextSimpleType,
 } from "../types/types";
 import type { User } from "firebase/auth";
 

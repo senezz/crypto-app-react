@@ -25,8 +25,6 @@ interface AssetDetailModalProps {
   onClose: () => void;
 }
 
-// Draws a "+"/"-" glyph on top of the buy/sell marker points, since
-// Chart.js has no built-in way to label individual points.
 const markerGlyphPlugin: Plugin<"line"> = {
   id: "markerGlyph",
   afterDatasetsDraw(chart) {
@@ -114,7 +112,6 @@ export default function AssetDetailModal({
           borderWidth: 0,
           showLine: false,
           spanGaps: false,
-          // consumed by markerGlyphPlugin, not a real Chart.js dataset option
           glyphs,
         } as ChartData<"line">["datasets"][number],
       ],

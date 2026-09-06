@@ -1,8 +1,5 @@
 import type { ThemeConfig } from "antd";
 
-// Flat, dark, low-shadow theme matching the new mockups.
-// Borders replace shadows for separating surfaces; green/red stay reserved
-// for profit/loss signaling only.
 const theme: ThemeConfig = {
   token: {
     colorPrimary: "#f5f5f0",

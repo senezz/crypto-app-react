@@ -9,7 +9,13 @@ import {
 } from "firebase/auth";
 import type { User } from "firebase/auth";
 import type { Dispatch, SetStateAction } from "react";
+import { message } from "antd";
 import { getUserByCode } from "./firebase";
+
+function reportAuthError(userMessage: string, e: unknown): void {
+  console.error(userMessage, e);
+  message.error(userMessage);
+}
 
 const provider = new GoogleAuthProvider();
 export const auth = getAuth();
@@ -22,7 +28,7 @@ export async function login(
     const result = await signInWithPopup(auth, provider);
     setUser(result.user);
   } catch (error) {
-    console.error(error);
+    reportAuthError("Failed to sign in with Google", error);
   }
 }
 
@@ -34,7 +40,7 @@ export async function logout(
     await signOut(auth);
     setUser(null);
   } catch (error) {
-    console.error(error);
+    reportAuthError("Failed to sign out", error);
   }
 }
 
