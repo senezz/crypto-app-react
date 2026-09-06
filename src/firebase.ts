@@ -4,6 +4,7 @@ import {
   getFirestore,
   collection,
   setDoc,
+  addDoc,
   getDocs,
   updateDoc,
   deleteDoc,
@@ -11,8 +12,9 @@ import {
   getDoc,
   query,
   where,
+  orderBy,
 } from "firebase/firestore";
-import type { Asset } from "./types/types";
+import type { Asset, Transaction } from "./types/types";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -93,6 +95,37 @@ export async function saveTelegramUsername(
   } catch (e) {
     console.error(e);
   }
+}
+
+export async function addTransaction(
+  uid: string,
+  transaction: Omit<Transaction, "id">,
+): Promise<void> {
+  try {
+    await addDoc(
+      collection(db, "portfolios", uid, "transactions"),
+      transaction,
+    );
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+export async function getTransactions(uid: string): Promise<Transaction[]> {
+  try {
+    const snapshot = await getDocs(
+      query(
+        collection(db, "portfolios", uid, "transactions"),
+        orderBy("date", "desc"),
+      ),
+    );
+    return snapshot.docs.map(
+      (d) => ({ id: d.id, ...d.data() }) as Transaction,
+    );
+  } catch (e) {
+    console.error(e);
+  }
+  return [];
 }
 
 export async function getUserByCode(code: string) {

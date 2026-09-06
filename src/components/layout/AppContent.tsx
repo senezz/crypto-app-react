@@ -1,21 +1,16 @@
-import { Layout, Typography, Statistic, Flex, Tag } from "antd";
-import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
+import { Layout, Typography } from "antd";
+import { useState } from "react";
 import { useCrypto } from "../../context/crypto-context";
-import PortfolioChart from "../PortfolioChart";
 import AssetsTable from "../AssetsTable";
+import PortfolioStats from "../PortfolioStats";
+import HistoryModal from "../HistoryModal";
 import { Coin } from "../../types/types";
-
-// interface Coin {
-//   id: string;
-//   price: number;
-// }
 
 type mapCoinPrice = {
   [key: string]: number;
 };
 
 const contentStyle: React.CSSProperties = {
-  textAlign: "center",
   minHeight: "calc(100vh - 60px)",
   color: "#f5f5f0",
   backgroundColor: "#141414",
@@ -24,6 +19,7 @@ const contentStyle: React.CSSProperties = {
 
 export default function AppContent() {
   const { portfolio, crypto } = useCrypto();
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   const cryptoPriceMap = crypto.reduce((acc: mapCoinPrice, c: Coin) => {
     acc[c.id] = c.price;
@@ -32,58 +28,35 @@ export default function AppContent() {
 
   const totalPortfolio = portfolio
     .map((asset) => asset.amount * cryptoPriceMap[asset.id])
-    .reduce((acc, v) => (acc += v), 0)
-    .toFixed(2);
+    .reduce((acc, v) => (acc += v), 0);
 
   const totalProfit = portfolio
     .map(
       (asset) =>
         asset.amount * cryptoPriceMap[asset.id] - asset.price * asset.amount,
     )
-    .reduce((acc, v) => (acc += v), 0)
-    .toFixed(2);
+    .reduce((acc, v) => (acc += v), 0);
 
-  const totalProfitNum: number = +totalProfit;
-  const totalPortfolioNum: number = +totalPortfolio;
+  const changePercent = totalPortfolio
+    ? (totalProfit / totalPortfolio) * 100
+    : 0;
 
   return (
     <Layout.Content style={contentStyle}>
-      <Typography.Title level={3} style={{ textAlign: "left", color: "#fff" }}>
-        Portfolio: {totalPortfolio}$
+      <Typography.Title level={3} style={{ textAlign: "left", marginBottom: 20 }}>
+        Portfolio
       </Typography.Title>
-      <Flex
-        gap="20px"
-        justify="flex-start"
-        align="center"
-        style={{ width: "100%" }}
-      >
-        <Statistic
-          value={Math.abs(totalProfitNum)}
-          precision={2}
-          styles={{
-            content: { color: totalProfitNum > 0 ? "#60be0e" : "#e63948" },
-          }}
-          prefix={
-            totalProfitNum > 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />
-          }
-          suffix="$"
-        />
-        <Tag
-          style={{
-            padding: "2px 5px",
-            fontWeight: "bold",
-            backgroundColor: totalProfitNum > 0 ? "#d1f5b2" : "#be8489",
-          }}
-          color={totalProfitNum > 0 ? "#4c9b07" : "#b81927"}
-        >
-          {totalPortfolioNum
-            ? Math.abs((totalProfitNum / totalPortfolioNum) * 100).toFixed(2)
-            : "0.00"}
-          %
-        </Tag>
-      </Flex>
-      <PortfolioChart />
+
+      <PortfolioStats
+        totalValue={totalPortfolio}
+        changePercent={changePercent}
+        assetsCount={portfolio.length}
+        onHistoryClick={() => setHistoryOpen(true)}
+      />
+
       <AssetsTable />
+
+      <HistoryModal open={historyOpen} onClose={() => setHistoryOpen(false)} />
     </Layout.Content>
   );
 }

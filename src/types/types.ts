@@ -17,6 +17,7 @@ export interface CryptoContextType {
   loading: boolean;
   crypto: Crypto;
   portfolio: Portfolio;
+  transactions: Transaction[];
   addAsset: (newAsset: Asset) => void;
   sellAsset: (assetId: string, sellAmount: number) => void;
   user: User | null | false;
@@ -58,3 +59,17 @@ export interface CryptoContextProps {
 
 export type Portfolio = Asset[];
 export type Crypto = Coin[];
+
+export type TransactionType = "buy" | "sell";
+
+export interface Transaction {
+  id?: string;
+  coinId: string;
+  coinName: string;
+  coinIcon?: string;
+  type: TransactionType;
+  amount: number;
+  price: number;
+  total: number;
+  date: string;
+}

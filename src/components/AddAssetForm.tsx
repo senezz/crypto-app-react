@@ -15,6 +15,7 @@ import { Asset, Coin } from "../types/types";
 
 interface addAssetFormProps {
   onClose: () => void;
+  defaultCoinId?: string;
 }
 
 const validateMessages = {
@@ -27,10 +28,15 @@ const validateMessages = {
   },
 };
 
-export default function AddAssetForm({ onClose }: addAssetFormProps) {
+export default function AddAssetForm({
+  onClose,
+  defaultCoinId,
+}: addAssetFormProps) {
   const [form] = Form.useForm();
   const { crypto, addAsset } = useCrypto();
-  const [coin, setCoin] = useState<Coin | null>(null);
+  const [coin, setCoin] = useState<Coin | null>(
+    () => crypto.find((c) => c.id === defaultCoinId) ?? null,
+  );
   const [submitted, setSubmitted] = useState(false);
   const assetRef = useRef<Asset | null>(null);
 

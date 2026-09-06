@@ -1,7 +1,12 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { fakeFetchCrypto, fetchPortfolio } from "../api";
 import { percentDifference } from "../utils";
-import { updatePortfolio, getPortfolio } from "../firebase";
+import {
+  updatePortfolio,
+  getPortfolio,
+  addTransaction,
+  getTransactions,
+} from "../firebase";
 import * as Auth from "../auth";
 import {
   Asset,
@@ -10,6 +15,7 @@ import {
   CryptoContextProps,
   Portfolio,
   Crypto,
+  Transaction,
   // CryptoContextSimpleType,
 } from "../types/types";
 import type { User } from "firebase/auth";
@@ -17,6 +23,7 @@ import type { User } from "firebase/auth";
 const CryptoContext = createContext<CryptoContextType>({
   portfolio: [],
   crypto: [],
+  transactions: [],
   loading: false,
   user: false,
   addAsset: () => {},
@@ -28,6 +35,7 @@ export function CryptoContextProvider({ children }: CryptoContextProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [crypto, setCrypto] = useState<Crypto>([]);
   const [portfolio, setPortfolio] = useState<Portfolio>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [user, setUser] = useState<User | null | false>(false);
 
   function mapPortfolio(portfolio: Portfolio, result: Crypto): Portfolio {
@@ -72,6 +80,7 @@ export function CryptoContextProvider({ children }: CryptoContextProps) {
         const portfolio = await getPortfolio(user.uid);
         setPortfolio(mapPortfolio(portfolio, result));
         setCrypto(result);
+        setTransactions(await getTransactions(user.uid));
         setLoading(false);
       } else if (user === null) {
         setLoading(false);
@@ -80,7 +89,25 @@ export function CryptoContextProvider({ children }: CryptoContextProps) {
     preUserUpdate();
   }, [user]);
 
+  function recordTransaction(transaction: Omit<Transaction, "id">) {
+    if (!user || typeof user === "boolean") return;
+    addTransaction(user.uid, transaction);
+    setTransactions((prev) => [transaction, ...prev]);
+  }
+
   function addAsset(newAsset: Asset) {
+    const coin = crypto.find((c) => c.id === newAsset.id);
+    recordTransaction({
+      coinId: newAsset.id,
+      coinName: coin?.name ?? newAsset.id,
+      coinIcon: coin?.icon,
+      type: "buy",
+      amount: newAsset.amount,
+      price: newAsset.price,
+      total: newAsset.amount * newAsset.price,
+      date: (newAsset.date ?? new Date()).toISOString(),
+    });
+
     setPortfolio((prev) => {
       const existedAssetIndex = prev.findIndex((a) => a.id === newAsset.id);
       if (existedAssetIndex === -1) {
@@ -104,6 +131,20 @@ export function CryptoContextProvider({ children }: CryptoContextProps) {
   }
 
   function sellAsset(assetId: string, sellAmount: number) {
+    const coin = crypto.find((c) => c.id === assetId);
+    const asset = portfolio.find((a) => a.id === assetId);
+    const price = coin?.price ?? asset?.price ?? 0;
+    recordTransaction({
+      coinId: assetId,
+      coinName: coin?.name ?? asset?.name ?? assetId,
+      coinIcon: coin?.icon,
+      type: "sell",
+      amount: sellAmount,
+      price,
+      total: sellAmount * price,
+      date: new Date().toISOString(),
+    });
+
     setPortfolio((prev) =>
       mapPortfolio(
         prev
@@ -120,6 +161,7 @@ export function CryptoContextProvider({ children }: CryptoContextProps) {
     loading,
     crypto,
     portfolio: portfolio as Portfolio,
+    transactions,
     user,
     setUser,
     addAsset,
