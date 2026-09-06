@@ -17,9 +17,9 @@ type mapCoinPrice = {
 const contentStyle: React.CSSProperties = {
   textAlign: "center",
   minHeight: "calc(100vh - 60px)",
-  color: "#fff",
-  backgroundColor: "#001529",
-  padding: "1rem",
+  color: "#f5f5f0",
+  backgroundColor: "#141414",
+  padding: "1.5rem",
 };
 
 export default function AppContent() {

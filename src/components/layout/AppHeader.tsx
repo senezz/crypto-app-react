@@ -9,12 +9,12 @@ import { Coin } from "../../types/types";
 
 const headerStyle: React.CSSProperties = {
   width: "100%",
-  textAlign: "center",
   height: 60,
-  padding: "1rem",
+  padding: "0 1.5rem",
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
+  borderBottom: "1px solid #2a2a2a",
 };
 
 export default function AppHeader() {
@@ -66,14 +66,14 @@ export default function AppHeader() {
         )}
       />
 
-      <Space size={16} align="center">
+      <Space size={12} align="center">
         <Button type="primary" onClick={() => setDrawer(true)}>
           Add Asset
         </Button>
 
-        <UserProfile />
-
         <TelegramLoginButton />
+
+        <UserProfile />
       </Space>
 
       <Modal open={modal} onCancel={() => setModal(false)} footer={null}>

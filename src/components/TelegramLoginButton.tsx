@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button, Avatar, message } from "antd";
+import { Avatar, message } from "antd";
 import TelegramCodeModal from "./TelegramCodeModal";
 import * as Auth from "../auth";
 import { getTelegramUsername, saveTelegramUsername } from "../firebase";
@@ -46,10 +46,13 @@ export default function TelegramLoginButton() {
 
   return (
     <>
-      <Button onClick={handleClick}>
-        {linkedUsername ? `@${linkedUsername}` : "Link Telegram"}{" "}
-        <Avatar src={telegramIcon} size={24} />
-      </Button>
+      <Avatar
+        size={36}
+        src={telegramIcon}
+        onClick={handleClick}
+        style={{ cursor: "pointer" }}
+        alt={linkedUsername ? `@${linkedUsername}` : "Link Telegram"}
+      />
       <TelegramCodeModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
