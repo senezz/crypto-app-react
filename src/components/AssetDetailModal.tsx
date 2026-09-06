@@ -128,7 +128,7 @@ export default function AssetDetailModal({
 
   return (
     <>
-      <Modal open onCancel={onClose} footer={null} title={null}>
+      <Modal open onCancel={onClose} footer={null} title={null} width={500}>
         <Flex align="center" gap={10} style={{ marginBottom: 4 }}>
           {coin.icon && <img src={coin.icon} alt={coin.name} width={24} />}
           <Typography.Text strong>{coin.name}</Typography.Text>
@@ -146,7 +146,7 @@ export default function AssetDetailModal({
           )}
         </Flex>
 
-        <div style={{ height: 160, margin: "16px 0" }}>
+        <div style={{ height: 220, margin: "16px 0" }}>
           {chartData && !loading ? (
             <Line
               data={chartData}
