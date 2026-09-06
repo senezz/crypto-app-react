@@ -10,9 +10,9 @@ import {
   doc,
   getDoc,
   query,
-  where,
   orderBy,
 } from "firebase/firestore";
+import { getFunctions, httpsCallable } from "firebase/functions";
 import type { Asset, Transaction } from "./types/types";
 
 const firebaseConfig = {
@@ -26,6 +26,7 @@ const firebaseConfig = {
 
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+export const functions = getFunctions(app);
 
 function reportFirestoreError(userMessage: string, e: unknown): void {
   console.error(userMessage, e);
@@ -128,9 +129,13 @@ export async function getTransactions(uid: string): Promise<Transaction[]> {
   return [];
 }
 
-export async function getUserByCode(code: string) {
-  const snapshot = await getDocs(
-    query(collection(db, "tg-codes"), where("code", "==", Number(code))),
-  );
-  return snapshot.docs[0]?.data();
+export async function verifyCode(
+  code: string,
+): Promise<{ username: string; userId: number }> {
+  const callVerifyCode = httpsCallable<
+    { code: string },
+    { username: string; userId: number }
+  >(functions, "verifyCode");
+  const result = await callVerifyCode({ code });
+  return result.data;
 }
