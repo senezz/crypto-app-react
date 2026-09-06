@@ -1,14 +1,30 @@
-import { Card, Flex, Tag, Typography } from "antd";
+import { Card, Flex, Skeleton, Tag, Typography } from "antd";
 import { useState } from "react";
 import { useCrypto } from "../context/crypto-context";
 import AssetDetailModal from "./AssetDetailModal";
 import type { Asset, Coin } from "../types/types";
 
 export default function AssetsTable() {
-  const { portfolio, crypto } = useCrypto();
+  const { portfolio, crypto, loading } = useCrypto();
   const [selected, setSelected] = useState<Asset | null>(null);
 
   const coinById = new Map(crypto.map((c) => [c.id, c]));
+
+  if (loading) {
+    return (
+      <Flex wrap gap={16}>
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Card
+            key={i}
+            style={{ flex: "1 1 320px", minWidth: 280 }}
+            styles={{ body: { padding: 16 } }}
+          >
+            <Skeleton active title={false} paragraph={{ rows: 4 }} />
+          </Card>
+        ))}
+      </Flex>
+    );
+  }
 
   return (
     <>
@@ -21,7 +37,7 @@ export default function AssetsTable() {
           return (
             <Card
               key={asset.id}
-              hoverable
+              className="asset-card"
               onClick={() => setSelected(asset)}
               style={{ flex: "1 1 320px", minWidth: 280, cursor: "pointer" }}
               styles={{ body: { padding: 16 } }}

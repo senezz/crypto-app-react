@@ -22,6 +22,8 @@ const theme: ThemeConfig = {
     boxShadow: "none",
     boxShadowSecondary: "none",
     boxShadowTertiary: "none",
+    motionDurationMid: "0.2s",
+    motionDurationSlow: "0.25s",
   },
   components: {
     Card: {

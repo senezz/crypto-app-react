@@ -53,7 +53,7 @@ export default function PortfolioStats({
         </Flex>
       </Card>
       <Card
-        hoverable
+        className="asset-card"
         onClick={onHistoryClick}
         style={{ ...tileStyle, cursor: "pointer" }}
         styles={{ body: { padding: 16 } }}
